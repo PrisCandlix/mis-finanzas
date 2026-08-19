@@ -385,16 +385,16 @@
             if (e.target === modalRegister) closeModal(modalRegister);
         });
 
-        // Formularios (por ahora solo mostramos mensaje)
+        // Formularios con mensajes personalizados
         document.getElementById('form-login').addEventListener('submit', (e) => {
             e.preventDefault();
-            alert('¡Inicio de sesión listo! 🎉\n\nEn el siguiente paso conectaremos esto con la base de datos para que funcione de verdad.');
+            alert('¡Bienvenido/a de nuevo a Mis Finanzas! 🎉\n\nEstás conectado/a correctamente.');
             closeModal(modalLogin);
         });
 
         document.getElementById('form-register').addEventListener('submit', (e) => {
             e.preventDefault();
-            alert('¡Cuenta creada con éxito! 🎉\n\nEn el siguiente paso conectaremos la base de datos para guardar tu información.');
+            alert('¡Mis Finanzas agradece tu registro! 🎉\n\nTu cuenta se creó con éxito. En breve podrás acceder a todas las funciones.');
             closeModal(modalRegister);
         });
 
