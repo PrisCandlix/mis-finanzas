@@ -14,18 +14,14 @@
             darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: {
-                        serif: ['Merriweather', 'Playfair Display', 'serif'],
-                    },
+                    fontFamily: { serif: ['Merriweather', 'Playfair Display', 'serif'] },
                     colors: {
-                        azulmarino: { 900:'#0a1629', 800:'#122440', 700:'#1a3357', 600:'#22426e', 500:'#2a5185' },
-                        arandano: { 600:'#3c2a6b', 500:'#513891', 400:'#664cb5' },
-                        castañooscuro: { 600:'#5c3c21', 500:'#7a4f2c', 400:'#986537' },
-                        grisoscuro: { 900:'#1f2023', 800:'#2c2d31', 700:'#393a40', 600:'#46474f' },
-                        serenity: { 50:'#f0f7fb', 100:'#d6eaf8', 200:'#bbddee', 300:'#9fd0e4', 400:'#84c3da' },
-                        verdeclaro: { 50:'#f0fbf4', 100:'#d4f1df', 200:'#b8e7ca', 300:'#9cdcb5', 400:'#80d2a0' },
-                        castañoclaro: { 50:'#fbf5ef', 100:'#f6e5d3', 200:'#f0d5b7', 300:'#ebc59b', 400:'#e5b57f' },
-                        grisclaro: { 50:'#f8f8f9', 100:'#e9e9eb', 200:'#dadadc', 300:'#cbcbcd', 400:'#bcbcbe' }
+                        azulmarino: { 900:'#0a1629', 700:'#1a3357', 500:'#2a5185' },
+                        arandano: { 500:'#513891' },
+                        serenity: { 100:'#d6eaf8', 300:'#9fd0e4' },
+                        verdeclaro: { 200:'#b8e7ca' },
+                        castañoclaro: { 100:'#f6e5d3' },
+                        grisoscuro: { 900:'#1f2023', 800:'#2c2d31' }
                     }
                 }
             }
@@ -34,182 +30,159 @@
     <style>
         * { font-family: 'Merriweather', serif; }
         h1, h2, h3 { font-family: 'Playfair Display', serif; }
-        .bg-hero-claro { background: linear-gradient(180deg, #84c3da 0%, #b8e7ca 100%); }
-        .dark .bg-hero-claro { background: linear-gradient(180deg, #0a1629 0%, #1a3357 100%); }
+        .bg-hero { background: linear-gradient(180deg, #9fd0e4 0%, #b8e7ca 100%); }
+        .dark .bg-hero { background: linear-gradient(180deg, #0a1629 0%, #1a3357 100%); }
         .modal { display: none; }
         .modal.activo { display: flex; }
     </style>
 </head>
-<body class="bg-serenity-50 dark:bg-grisoscuro-900 text-azulmarino-900 dark:text-serenity-50 transition-colors duration-300">
+<body class="bg-serenity-100 dark:bg-grisoscuro-900 text-azulmarino-900 dark:text-white transition-colors duration-300">
 
-<!-- BARRA SUPERIOR -->
-<header class="sticky top-0 z-50 bg-white/90 dark:bg-grisoscuro-800/90 backdrop-blur-sm border-b border-castañoclaro-200 dark:border-grisoscuro-700">
+<header class="sticky top-0 z-50 bg-white/90 dark:bg-grisoscuro-800/90 backdrop-blur-sm border-b border-castañoclaro-100 dark:border-grisoscuro-700">
     <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
         <div class="flex items-center gap-2">
-            <span class="text-2xl text-azulmarino-700 dark:text-arandano-400">🖩</span>
-            <span class="text-2xl font-semibold text-azulmarino-800 dark:text-castañoclaro-300">Mis Finanzas</span>
+            <span class="text-2xl">🖩</span>
+            <span class="text-2xl font-semibold">Mis Finanzas</span>
         </div>
         <div class="flex items-center gap-3">
-            <button id="btn-bloqueo" class="p-2 rounded-lg hover:bg-castañoclaro-100 dark:hover:bg-grisoscuro-700 text-xl">🔒</button>
-            <button id="btn-tema" class="p-2 rounded-lg hover:bg-castañoclaro-100 dark:hover:bg-grisoscuro-700 text-xl">
-                <span id="icono-luz">🌙</span>
-                <span id="icono-oscuro" class="hidden">☀️</span>
+            <button id="botonBloqueo" class="p-2 rounded-lg hover:bg-castañoclaro-100 dark:hover:bg-grisoscuro-700 text-xl">🔒</button>
+            <button id="botonTema" class="p-2 rounded-lg hover:bg-castañoclaro-100 dark:hover:bg-grisoscuro-700 text-xl">
+                <span id="iconoLuna">🌙</span>
+                <span id="iconoSol" class="hidden">☀️</span>
             </button>
         </div>
     </div>
 </header>
 
-<!-- PANTALLA PRINCIPAL -->
-<div class="bg-hero-claro py-16 px-6">
+<div class="bg-hero py-16 px-6">
     <div class="max-w-4xl mx-auto text-center">
-        <h1 class="text-4xl md:text-5xl font-normal mb-4 leading-tight">
-            Claridad y control para tu economía
-        </h1>
-        <p id="saludo-principal" class="text-xl font-light mb-12 max-w-3xl mx-auto">
-            Bienvenido
-        </p>
+        <h1 class="text-4xl md:text-5xl font-normal mb-4">Claridad y control para tu economía</h1>
+        <p id="saludo" class="text-xl font-light mb-12">Bienvenido</p>
         <div class="flex flex-col gap-4 max-w-md mx-auto">
-            <button id="btn-registro" class="bg-azulmarino-700 text-white py-4 px-6 rounded-xl text-xl font-medium shadow-lg">
-                Crear cuenta gratis
-            </button>
-            <button id="btn-ingreso" class="border-2 border-azulmarino-700 dark:border-white text-azulmarino-800 dark:text-white py-4 px-6 rounded-xl text-xl font-medium">
-                Ya tengo cuenta
-            </button>
+            <button id="botonRegistro" class="bg-azulmarino-700 text-white py-4 px-6 rounded-xl text-xl font-medium">Crear cuenta gratis</button>
+            <button id="botonIngreso" class="border-2 border-azulmarino-900 dark:border-white py-4 px-6 rounded-xl text-xl font-medium">Ya tengo cuenta</button>
         </div>
     </div>
 </div>
 
-<!-- PANEL USUARIO -->
-<div id="panel-usuario" class="hidden max-w-4xl mx-auto px-4 py-8">
+<div id="panelUsuario" class="hidden max-w-4xl mx-auto px-4 py-8">
     <div class="bg-white dark:bg-grisoscuro-800 rounded-2xl p-6 shadow-lg mb-8">
-        <h2 id="saludo-usuario" class="text-2xl font-normal mb-2"></h2>
-        <p class="text-grisclaro-600 dark:text-grisoscuro-300">Tu espacio para crecer con tranquilidad</p>
+        <h2 id="saludoUsuario" class="text-2xl font-normal mb-2"></h2>
+        <p class="text-gray-600 dark:text-gray-300">Tu espacio para crecer con tranquilidad</p>
     </div>
-    <button id="btn-cerrar-sesion" class="text-red-600 dark:text-red-400 w-full text-center py-3">Cerrar sesión</button>
+    <button id="botonCerrarSesion" class="text-red-600 w-full text-center py-3">Cerrar sesión</button>
 </div>
 
-<!-- MODAL REGISTRO -->
-<div id="modal-registro" class="modal fixed inset-0 bg-black/60 items-center justify-center z-50 p-4">
+<div id="modalRegistro" class="modal fixed inset-0 bg-black/60 items-center justify-center z-50 p-4">
     <div class="bg-white dark:bg-grisoscuro-800 p-6 rounded-xl w-full max-w-md">
         <h3 class="text-xl font-bold mb-4">Crear tu cuenta</h3>
-        <form id="form-registro" class="space-y-4">
-            <input type="text" id="reg-nombre" placeholder="Tu nombre" required class="w-full p-3 rounded-lg border border-castañoclaro-300 dark:border-grisoscuro-600 bg-castañoclaro-50 dark:bg-grisoscuro-900">
-            <input type="email" id="reg-email" placeholder="Correo electrónico" required class="w-full p-3 rounded-lg border border-castañoclaro-300 dark:border-grisoscuro-600 bg-castañoclaro-50 dark:bg-grisoscuro-900">
+        <form id="formularioRegistro" class="space-y-4">
+            <input type="text" id="regNombre" placeholder="Tu nombre" required class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900">
+            <input type="email" id="regCorreo" placeholder="Correo electrónico" required class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900">
             <div class="relative">
-                <input type="password" id="reg-pass" placeholder="Contraseña (mínimo 6 caracteres)" required minlength="6" class="w-full p-3 pr-12 rounded-lg border border-castañoclaro-300 dark:border-grisoscuro-600 bg-castañoclaro-50 dark:bg-grisoscuro-900">
-                <button type="button" id="ver-reg-pass" class="absolute right-3 top-1/2 -translate-y-1/2 text-xl">👁️</button>
+                <input type="password" id="regClave" placeholder="Contraseña (mínimo 6 caracteres)" required minlength="6" class="w-full p-3 pr-12 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900">
+                <button type="button" id="verRegClave" class="absolute right-3 top-1/2 -translate-y-1/2 text-xl">👁️</button>
             </div>
-            <p class="text-sm text-grisclaro-500">Te enviaremos un correo de confirmación</p>
+            <p class="text-sm text-gray-500">Te enviaremos un correo de confirmación</p>
             <button type="submit" class="w-full py-3 rounded-lg bg-azulmarino-700 text-white">Crear cuenta</button>
         </form>
-        <button class="mt-4 text-sm text-grisclaro-500" onclick="cerrarTodo()">Cerrar</button>
+        <button class="mt-4 text-sm text-gray-500" onclick="cerrarTodo()">Cerrar</button>
     </div>
 </div>
 
-<!-- MODAL INGRESO -->
-<div id="modal-ingreso" class="modal fixed inset-0 bg-black/60 items-center justify-center z-50 p-4">
+<div id="modalIngreso" class="modal fixed inset-0 bg-black/60 items-center justify-center z-50 p-4">
     <div class="bg-white dark:bg-grisoscuro-800 p-6 rounded-xl w-full max-w-md">
         <h3 class="text-xl font-bold mb-4">Ingresar</h3>
-        <form id="form-ingreso" class="space-y-4">
-            <input type="email" id="ing-email" placeholder="Tu correo" required class="w-full p-3 rounded-lg border border-castañoclaro-300 dark:border-grisoscuro-600 bg-castañoclaro-50 dark:bg-grisoscuro-900">
+        <form id="formularioIngreso" class="space-y-4">
+            <input type="email" id="ingCorreo" placeholder="Tu correo" required class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900">
             <div class="relative">
-                <input type="password" id="ing-pass" placeholder="Contraseña" required class="w-full p-3 pr-12 rounded-lg border border-castañoclaro-300 dark:border-grisoscuro-600 bg-castañoclaro-50 dark:bg-grisoscuro-900">
-                <button type="button" id="ver-ing-pass" class="absolute right-3 top-1/2 -translate-y-1/2 text-xl">👁️</button>
+                <input type="password" id="ingClave" placeholder="Contraseña" required class="w-full p-3 pr-12 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900">
+                <button type="button" id="verIngClave" class="absolute right-3 top-1/2 -translate-y-1/2 text-xl">👁️</button>
             </div>
             <button type="submit" class="w-full py-3 rounded-lg bg-azulmarino-700 text-white">Entrar</button>
         </form>
-        <button class="mt-4 text-sm text-grisclaro-500" onclick="cerrarTodo()">Cerrar</button>
+        <button class="mt-4 text-sm text-gray-500" onclick="cerrarTodo()">Cerrar</button>
     </div>
 </div>
 
-<!-- MODAL BLOQUEO -->
-<div id="modal-bloqueo" class="modal fixed inset-0 bg-black/60 items-center justify-center z-50 p-4">
+<div id="modalBloqueo" class="modal fixed inset-0 bg-black/60 items-center justify-center z-50 p-4">
     <div class="bg-white dark:bg-grisoscuro-800 p-6 rounded-xl w-full max-w-md">
         <h3 class="text-xl font-bold mb-4">🔒 Bloqueo de Seguridad</h3>
         <p class="mb-4">Elige tu forma de desbloquear la app:</p>
         <div class="space-y-3">
-            <button class="w-full p-3 rounded-lg border border-castañoclaro-300 text-left" onclick="guardarBloqueo('biometrico')">👆 Huella o rostro</button>
-            <button class="w-full p-3 rounded-lg border border-castañoclaro-300 text-left" onclick="guardarBloqueo('pin')">🔢 PIN numérico</button>
-            <button class="w-full p-3 rounded-lg border border-castañoclaro-300 text-left" onclick="guardarBloqueo('patron')">✏️ Patrón</button>
+            <button class="w-full p-3 rounded-lg border text-left" onclick="guardarBloqueo('biometrico')">👆 Huella o rostro</button>
+            <button class="w-full p-3 rounded-lg border text-left" onclick="guardarBloqueo('pin')">🔢 PIN numérico</button>
+            <button class="w-full p-3 rounded-lg border text-left" onclick="guardarBloqueo('patron')">✏️ Patrón</button>
         </div>
-        <p id="mensaje-bloqueo" class="mt-4 text-sm text-verdeclaro-600"></p>
-        <button class="mt-4 text-sm text-grisclaro-500" onclick="cerrarTodo()">Cerrar</button>
+        <p id="mensajeBloqueo" class="mt-4 text-sm text-green-600"></p>
+        <button class="mt-4 text-sm text-gray-500" onclick="cerrarTodo()">Cerrar</button>
     </div>
 </div>
 
 <script>
-    // CONEXIÓN SUPABASE
     const SUPABASE_URL = "https://rvfwcbdroqjccxjwznkm.supabase.co";
     const SUPABASE_KEY = "sb_publishable_09BiXr7PFlLfDP3YfEZg-w_b_5UH0td";
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // SALUDO SEGÚN HORARIO
     function obtenerSaludo(nombre = '') {
         const h = new Date().getHours();
         let s = h >= 5 && h < 12 ? 'Buenos días' : h >= 12 && h < 19 ? 'Buenas tardes' : 'Buenas noches';
         return nombre ? `${s}, ${nombre}` : s;
     }
 
-    // CARGAR TEMA GUARDADO
-    function cargarTema() {
-        if(localStorage.getItem('tema') === 'oscuro') {
-            document.documentElement.classList.add('dark');
-            document.getElementById('icono-luz').classList.add('hidden');
-            document.getElementById('icono-oscuro').classList.remove('hidden');
-        }
+    if(localStorage.getItem('tema') === 'oscuro') {
+        document.documentElement.classList.add('dark');
+        document.getElementById('iconoLuna').classList.add('hidden');
+        document.getElementById('iconoSol').classList.remove('hidden');
     }
-    cargarTema();
 
-    // CAMBIAR TEMA
-    document.getElementById('btn-tema').addEventListener('click', () => {
+    document.getElementById('botonTema').addEventListener('click', () => {
         document.documentElement.classList.toggle('dark');
         const oscuro = document.documentElement.classList.contains('dark');
         localStorage.setItem('tema', oscuro ? 'oscuro' : 'claro');
-        document.getElementById('icono-luz').classList.toggle('hidden', oscuro);
-        document.getElementById('icono-oscuro').classList.toggle('hidden', !oscuro);
+        document.getElementById('iconoLuna').classList.toggle('hidden', oscuro);
+        document.getElementById('iconoSol').classList.toggle('hidden', !oscuro);
     });
 
-    // VISOR DE CONTRASEÑA
     function activarVisor(boton, input) {
         document.getElementById(boton).addEventListener('click', () => {
             const campo = document.getElementById(input);
             campo.type = campo.type === 'password' ? 'text' : 'password';
         });
     }
-    activarVisor('ver-reg-pass', 'reg-pass');
-    activarVisor('ver-ing-pass', 'ing-pass');
+    activarVisor('verRegClave', 'regClave');
+    activarVisor('verIngClave', 'ingClave');
 
-    // ABRIR MODALES
-    document.getElementById('btn-registro').addEventListener('click', () => {
-        document.getElementById('modal-registro').classList.add('activo');
+    document.getElementById('botonRegistro').addEventListener('click', () => {
+        document.getElementById('modalRegistro').classList.add('activo');
     });
-    document.getElementById('btn-ingreso').addEventListener('click', () => {
-        document.getElementById('modal-ingreso').classList.add('activo');
+    document.getElementById('botonIngreso').addEventListener('click', () => {
+        document.getElementById('modalIngreso').classList.add('activo');
     });
-    document.getElementById('btn-bloqueo').addEventListener('click', () => {
-        document.getElementById('modal-bloqueo').classList.add('activo');
+    document.getElementById('botonBloqueo').addEventListener('click', () => {
+        document.getElementById('modalBloqueo').classList.add('activo');
     });
+
     function cerrarTodo() {
         document.querySelectorAll('.modal').forEach(m => m.classList.remove('activo'));
     }
 
-    // GUARDAR BLOQUEO
     window.guardarBloqueo = function(tipo) {
         localStorage.setItem('bloqueo', tipo);
         const nom = { biometrico:'Huella/Rostro', pin:'PIN', patron:'Patrón' };
-        document.getElementById('mensaje-bloqueo').textContent = `✅ Guardado: ${nom[tipo]}`;
+        document.getElementById('mensajeBloqueo').textContent = `✅ Guardado: ${nom[tipo]}`;
     };
 
-    // REGISTRO REAL
-    document.getElementById('form-registro').addEventListener('submit', async e => {
+    document.getElementById('formularioRegistro').addEventListener('submit', async e => {
         e.preventDefault();
-        const nombre = document.getElementById('reg-nombre').value.trim();
-        const email = document.getElementById('reg-email').value.trim();
-        const pass = document.getElementById('reg-pass').value;
+        const nombre = document.getElementById('regNombre').value.trim();
+        const correo = document.getElementById('regCorreo').value.trim();
+        const clave = document.getElementById('regClave').value;
 
         const { error } = await supabase.auth.signUp({
-            email, password: pass,
-            options: { data: { nombre }, emailRedirectTo: window.location.href }
+            email: correo,
+            password: clave,
+            options: { data: { nombre: nombre }, emailRedirectTo: window.location.href }
         });
 
         if(error) alert(`⚠️ ${error.message}`);
@@ -217,32 +190,29 @@
         cerrarTodo();
     });
 
-    // INGRESO REAL
-    document.getElementById('form-ingreso').addEventListener('submit', async e => {
+    document.getElementById('formularioIngreso').addEventListener('submit', async e => {
         e.preventDefault();
-        const email = document.getElementById('ing-email').value.trim();
-        const pass = document.getElementById('ing-pass').value;
+        const correo = document.getElementById('ingCorreo').value.trim();
+        const clave = document.getElementById('ingClave').value;
 
-        const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
+        const { error } = await supabase.auth.signInWithPassword({ email: correo, password: clave });
         if(error) alert(`⚠️ ${error.message}`);
         else alert('✅ ¡Bienvenido!');
         cerrarTodo();
     });
 
-    // VERIFICAR SESIÓN
     async function verificarSesion() {
         const { data: { session } } = await supabase.auth.getSession();
         if(session) {
             const nombre = session.user.user_metadata?.nombre || session.user.email.split('@')[0];
-            document.getElementById('saludo-principal').textContent = obtenerSaludo(nombre);
-            document.getElementById('saludo-usuario').textContent = `${obtenerSaludo(nombre)} 👋`;
-            document.querySelector('.bg-hero-claro').classList.add('hidden');
-            document.getElementById('panel-usuario').classList.remove('hidden');
+            document.getElementById('saludo').textContent = obtenerSaludo(nombre);
+            document.getElementById('saludoUsuario').textContent = `${obtenerSaludo(nombre)} 👋`;
+            document.querySelector('.bg-hero').classList.add('hidden');
+            document.getElementById('panelUsuario').classList.remove('hidden');
         }
     }
 
-    // CERRAR SESIÓN
-    document.getElementById('btn-cerrar-sesion').addEventListener('click', async () => {
+    document.getElementById('botonCerrarSesion').addEventListener('click', async () => {
         await supabase.auth.signOut();
         location.reload();
     });
