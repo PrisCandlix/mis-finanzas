@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Finanzas - Controlá tu economía con confianza</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        // Paleta psicológica: confianza, seguridad, calma
+                        // Azules profundos = confianza financiera
+                        // Verdes suaves = crecimiento/estabilidad
+                        // Tonos cálidos = acogedor, no invasivo
+                        primary: {
+                            light: '#4a90e2',
+                            DEFAULT: '#2c5282',
+                            dark: '#1a365d'
+                        },
+                        secondary: {
+                            light: '#68d391',
+                            DEFAULT: '#48bb78',
+                            dark: '#2f855a'
+                        },
+                        accent: {
+                            light: '#63b3ed',
+                            DEFAULT: '#3182ce'
+                        },
+                        surface: {
+                            light: '#ffffff',
+                            warm: '#f7fafc',
+                            dark: '#171923'
+                        },
+                        background: {
+                            light: '#f5f7fa',
+                            dark: '#1a202c'
+                        },
+                        text: {
+                            light: '#2d3748',
+                            muted: '#718096',
+                            dark: '#e2e8f0'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .gradient-bg-light {
+                background: linear-gradient(135deg, #1a365d 0%, #2c5282 50%, #3182ce 100%);
+            }
+            .gradient-bg-dark {
+                background: linear-gradient(135deg, #1a202c 0%, #171923 50%, #2d3748 100%);
+            }
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            }
+        }
+    </style>
+</head>
+<body class="font-sans bg-background-light text-text-light dark:bg-background-dark dark:text-text-dark transition-colors duration-300">
+    
+    <!-- Navegación -->
+    <nav class="bg-surface-warm dark:bg-surface-dark shadow-sm sticky top-0 z-50 transition-colors duration-300 border-b border-gray-100 dark:border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center">
+                    <div class="flex items-center">
+                        <svg class="w-8 h-8 text-primary dark:text-primary-light mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                        </svg>
+                        <span class="text-xl font-bold text-primary dark:text-primary-light">Mis Finanzas</span>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#beneficios" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light transition-colors">Beneficios</a>
+                    <a href="#como-funciona" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light transition-colors">Cómo funciona</a>
+                    <a href="#precios" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light transition-colors">Planes</a>
+                    <button id="theme-toggle" class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors" aria-label="Cambiar tema">
+                        <svg id="sun-icon" class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        <svg id="moon-icon" class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                        </svg>
+                    </button>
+                    <a href="#precios" class="bg-primary dark:bg-primary-light text-white px-5 py-2 rounded-lg hover:bg-primary-dark dark:hover:bg-primary transition-colors font-medium">
+                        Comenzar
+                    </a>
+                </div>
+                <div class="md:hidden flex items-center space-x-2">
+                    <button id="theme-toggle-mobile" class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors" aria-label="Cambiar tema">
+                        <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        <svg class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                        </svg>
+                    </button>
+                    <button class="text-gray-600 dark:text-gray-300" aria-label="Menú">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="gradient-bg-light dark:gradient-bg-dark text-white py-16 md:py-24 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+                        Claridad y control para tu economía personal
+                    </h1>
+                    <p class="text-xl mb-8 text-blue-100 dark:text-gray-300 leading-relaxed">
+                        Mis Finanzas te acompaña en el camino hacia la estabilidad económica. Comprendé tus hábitos, optimizá tus gastos y construí ahorros sostenibles sin renunciar a tu calidad de vida.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="#precios" class="bg-white text-primary font-semibold px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors text-center shadow-lg">
+                            Explorar planes
+                        </a>
+                        <a href="#como-funciona" class="border-2 border-white/70 text-white font-semibold px-8 py-3 rounded-lg hover:bg-white/10 transition-colors text-center backdrop-blur-sm">
+                            Conocer el método
+                        </a>
+                    </div>
+                    <p class="mt-4 text-blue-200 dark:text-gray-400 text-sm">
+                        Plan mensual con 7 días de prueba sin costo • Cancelación inmediata
+                    </p>
+                </div>
+                <div class="hidden md:block">
+                    <div class="bg-surface-light dark:bg-gray-800 rounded-2xl shadow-2xl p-6 text-text-light dark:text-text-dark">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="font-semibold text-lg">Panel principal</h3>
+                            <span class="bg-green-100 dark:bg-green-900/40 text-secondary-dark dark:text-secondary-light text-xs px-3 py-1 rounded-full font-medium">
+                                + $140 ahorrados
+                            </span>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                <span class="text-gray-600 dark:text-gray-300">Ingresos mensuales</span>
+                                <span class="font-semibold text-secondary-dark dark:text-secondary-light">$1.200</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                <span class="text-gray-600 dark:text-gray-300">Gastos comprometidos</span>
+                                <span class="font-semibold text-red-600 dark:text-red-400">-$780</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800/50">
+                                <span class="text-gray-700 dark:text-gray-200 font-medium">Disponible este mes</span>
+                                <span class="font-bold text-primary dark:text-primary-light">$420</span>
+                            </div>
+                        </div>
+                        <div class="mt-6 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800/50">
+                            <div class="flex items-start">
+                                <svg class="w-5 h-5 text-secondary-dark dark:text-secondary-light mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <p class="text-sm text-green-800 dark:text-green-200">
+                                    <strong>Recomendación semanal:</strong> Ajustar la frecuencia de compras en supermercado a una sola vez por semana podría reducir gastos impulsivos en aproximadamente $50 mensuales.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Beneficios -->
+    <section id="beneficios" class="py-16 md:py-24 bg-surface-warm dark:bg-surface-dark transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Por qué Mis Finanzas es diferente</h2>
+                <p class="text-xl text-text-muted dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
+                    Un enfoque humano y realista para tus finanzas. No exigimos perfección; acompañamos tu progreso.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="p-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-surface-light dark:bg-gray-800/50 card-hover">
+                    <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-primary dark:text-primary-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Seguridad y privacidad</h3>
+                    <p class="text-text-muted dark:text-gray-400 leading-relaxed">
+                        Tus datos financieros se tratan con los más altos estándares de seguridad. La confidencialidad es un pilar fundamental de nuestro servicio.
+                    </p>
+                </div>
+                
+                <div class="p-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-surface-light dark:bg-gray-800/50 card-hover">
+                    <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-secondary dark:text-secondary-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Inversión mínima de tiempo</h3>
+                    <p class="text-text-muted dark:text-gray-400 leading-relaxed">
+                        Registrá tus movimientos en segundos. Diseñamos cada interacción para que no te quite tiempo valioso de tu día a día.
+                    </p>
+                </div>
+                
+                <div class="p-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-surface-light dark:bg-gray-800/50 card-hover">
+                    <div class="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Ideal para compartir en familia</h3>
+                    <p class="text-text-muted dark:text-gray-400 leading-relaxed">
+                        Nuestro plan familiar permite hasta cuatro usuarios. Cuando una persona experimenta mejoras reales, naturalmente invita a su entorno cercano.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cómo funciona -->
+    <section id="como-funciona" class="py-16 md:py-24 bg-background-light dark:bg-background-dark transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Un método simple en tres etapas</h2>
+                <p class="text-xl text-text-muted dark:text-gray-400">Comenzá hoy y notá cambios concretos en tu primera semana.</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-primary dark:bg-primary-light text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-6 shadow-md">1</div>
+                    <h3 class="text-xl font-semibold mb-3">Diagnóstico personal</h3>
+                    <p class="text-text-muted dark:text-gray-400 leading-relaxed">
+                        Compartinos tu situación económica actual mediante un formulario estructurado. En pocos minutos obtenemos una fotografía clara de tus finanzas.
+                    </p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-primary dark:bg-primary-light text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-6 shadow-md">2</div>
+                    <h3 class="text-xl font-semibold mb-3">Plan de acción semanal</h3>
+                    <p class="text-text-muted dark:text-gray-400 leading-relaxed">
+                        Recibís recomendaciones específicas y medibles adaptadas a tu realidad. Ajustes pequeños que generan impacto sostenible.
+                    </p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-primary dark:bg-primary-light text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-6 shadow-md">3</div>
+                    <h3 class="text-xl font-semibold mb-3">Evolución y aprendizaje</h3>
+                    <p class="text-text-muted dark:text-gray-400 leading-relaxed">
+                        Visualizá tu progreso, ajustá el rumbo cuando sea necesario y construí hábitos financieros saludables de manera gradual.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Planes de Suscripción -->
+    <section id="precios" class="py-16 md:py-24 bg-surface-warm dark:bg-surface-dark transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Planes de suscripción</h2>
+                <p class="text-xl text-text-muted dark:text-gray-400 mb-2">Elegí la opción que mejor se adapte a tus necesidades</p>
+                <p class="text-sm text-text-muted dark:text-gray-500">Todos los precios en USD • Pago seguro mediante Mercado Pago</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+                
+                <!-- Plan Básico -->
+                <div class="border border-gray-200 dark:border-gray-700 rounded-2xl p-6 bg-surface-light dark:bg-gray-800/50 card-hover flex flex-col">
+                    <h3 class="text-xl font-bold mb-1">Básico</h3>
+                    <p class="text-text-muted dark:text-gray-400 text-sm mb-6">Para comenzar tu camino</p>
+                    <div class="mb-6">
+                        <span class="text-3xl font-bold">$3.99</span>
+                        <span class="text-text-muted dark:text-gray-400">/mes</span>
+                    </div>
+                    <ul class="space-y-3 mb-8 flex-grow">
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-secondary dark:text-secondary-light mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-sm text-text-muted dark:text-gray-400">Diagnóstico financiero completo</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-secondary dark:text-secondary-light mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-sm text-text-muted dark:text-gray-400">1 ajuste personalizado semanal</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-secondary dark:text-secondary-light mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-sm text-text-muted dark:text-gray-400">Registro de movimientos</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-secondary dark:text-secondary-light mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-sm text-text-muted dark:text-gray-400">Reportes mensuales básicos</span>
+                        </li>
+                    </ul>
+                    <button class="w-full py-3 border-2 border-primary dark:border-primary-light text-primary dark:text-primary-light font-medium rounded-lg hover:bg-primary dark:hover:bg-primary-light hover:text-white transition-colors">
+                        Elegir Básico
+                    </button>
+                </div>
+                
+                <!-- Plan Mensual (Recomendado) -->
+                <div class="border-2 border-primary dark:border-primary-light rounded-2xl p-6 relative bg-gradient-to-b from-blue-50 to-surface-light dark:from-blue-900/20 dark:to-gray-800 card-hover flex flex-col shadow-lg">
+                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-primary dark:bg-primary-light text-white px-4 py-1 rounded-full text-xs font-semibold">
+                        MÁS ELEGIDO
+                    </div>
+                    <h3 class="text-xl font-bold mb-1">Mensual</h3>
+                    <p class="text-text-muted dark:text-gray-400 text-sm mb-6">Control integral de tus finanzas</p>
+                    <div class="mb-6">
+                        <span class="text-3xl font-bold">$6.99</span>
+                        <span class="text-text-muted dark:text-gray-400">/mes</span>
+                    </div>
+                    <ul class="space-y-3 mb-8 flex-grow">
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-secondary dark:text-secondary-light mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-sm text-text-muted dark:text-gray-400 font-medium">Todo lo del plan Básico</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-secondary dark:text-secondary-light mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-sm text-text-muted dark:text-gray-400">3 ajustes personalizados semanales</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-secondary dark:text-secondary-light mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-sm text-text-muted dark:text-gray-400">Alertas proactivas de gastos</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-secondary dark:text-secondary-light mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-sm text-text-muted dark:text-gray-400">Plan de pago de deudas</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-secondary dark:text-secondary-light mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-sm text-text-muted dark:text-gray-400 font-medium">7 días de prueba gratuita</span>
+                        </li>
+                    </ul>
+                    <button class="w-full py-3 bg-primary dark:bg-primary-light text-white font-medium rounded-lg hover:bg-primary-dark dark:hover:bg-primary transition-colors shadow-md">
+                        Probar gratis 7 días
+                    </button>
+                </div>
+                
+                <!-- Plan Familiar -->
+                <div class="border border-gray-200 dark:border-gray-700 rounded-2xl p-6 bg-surface-light dark:bg-gray-800/50 card-hover flex flex-col">
+                    <h3 class="text-xl font-bold mb-1">Familiar</h3>
+                    <p class="text-text-muted dark:text-gray-400 text-sm mb-6">Hasta 4 usuarios</p>
+                    <div class="mb-6">
+                        <span class="text-3xl font-bold">$9.99</span>
+                        <span class="text-text-muted dark:text-gray-400">/mes</span>
+                    </div>
+                    <ul class="space-y-3 mb-8 flex-grow">
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-secondary dark:text-secondary-light mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-sm text-text-muted dark:text-gray-400 font-medium">Todo lo del plan Mensual</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-secondary dark:text-secondary-light mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-sm text-text-muted dark:text-gray-400">Hasta <strong>4 usuarios</strong> independientes</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-secondary dark:text-secondary-light mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-sm text-text-muted dark:text-gray-400">Panel de gastos compartidos</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-secondary dark:text-secondary-light mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-sm text-text-muted dark:text-gray-400">Objetivos financieros conjuntos</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-secondary dark:text-secondary-light mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-sm text-text-muted dark:text-gray-400">~$2.50 por persona/mes</span>
+                        </li>
+                    </ul>
+                    <button class="w-full py-3 border-2 border-primary dark:border-primary-light text-primary dark:text-primary-light font-medium rounded-lg hover:bg-primary dark:hover:bg-primary-light hover:text-white transition-colors">
+                        Elegir Familiar
+                    </button>
+                </div>
+                
+                <!-- Plan Anual -->
+                <div class="border border-gray-200 dark:border-gray-700 rounded-2xl p-6 bg-surface-light dark:bg-gray-800/50 card-hover flex flex-col">
+                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-secondary text-white px-4 py-1 rounded-full text-xs font-semibold">
+                        MEJOR VALOR
+                    </div>
+                    <h3 class="text-xl font-bold mb-1">Anual</h3>
+                    <p class="text-text-muted dark:text-gray-400 text-sm mb-6">Compromiso a largo plazo</p>
+                    <div class="mb-6">
+                        <span class="text-3xl font-bold">$99.99</span>
+                        <span class="text-text-muted dark:text-gray-400">/año</span>
+                    </div>
+                    <p class="text-xs text-secondary-dark dark:text-secondary-light mb-4 font-medium">
+                        Ahorrá ~2 meses respecto al plan mensual
+                    </p>
+                    <ul class="space-y-3 mb-8 flex-grow">
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-secondary dark:text-secondary-light mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-sm text-text-muted dark:text-gray-400 font-medium">Todo lo del plan Mensual</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-secondary dark:text-secondary-light mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-sm text-text-muted dark:text-gray-400">12 meses de servicio completo</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-secondary dark:text-secondary-light mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-sm text-text-muted dark:text-gray-400">Ahorro del ~17% sobre mensual</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-secondary dark:text-secondary-light mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-sm text-text-muted dark:text-gray-400">Acceso prioritario a nuevas funciones</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-secondary dark:text-secondary-light mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-sm text-text-muted dark:text-gray-400">Soporte prioritario</span>
+                        </li>
+                    </ul>
+                    <button class="w-full py-3 bg-secondary dark:bg-secondary text-white font-medium rounded-lg hover:bg-secondary-dark dark:hover:bg-secondary-dark transition-colors shadow-md">
+                        Elegir Anual
+                    </button>
+                </div>
+            </div>
+            
+            <p class="text-center mt-10 text-text-muted dark:text-gray-500 text-sm max-w-2xl mx-auto">
+                💡 <strong>Consejo:</strong> El plan familiar es una excelente opción para crecer orgánicamente. Cuando un miembro de la familia experimenta resultados positivos, naturalmente invita a otros usuarios. Entre cuatro personas, el costo por usuario es sumamente accesible.
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 dark:bg-gray-950 text-white py-12 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <svg class="w-6 h-6 text-primary-light mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                        </svg>
+                        <h4 class="text-lg font-bold">Mis Finanzas</h4>
+                    </div>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Herramienta profesional para la gestión consciente y sostenible de tus recursos económicos.
+                    </p>
+                </div>
+                <div>
+                    <h5 class="font-semibold mb-4">Producto</h5>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#beneficios" class="hover:text-white transition-colors">Beneficios</a></li>
+                        <li><a href="#como-funciona" class="hover:text-white transition-colors">Método</a></li>
+                        <li><a href="#precios" class="hover:text-white transition-colors">Planes y precios</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-semibold mb-4">Legal</h5>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#" class="hover:text-white transition-colors">Términos de servicio</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Política de privacidad</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Seguridad de datos</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-semibold mb-4">Contacto</h5>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li>hola@misfinanzas.com</li>
+                        <li>Uruguay</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 dark:border-gray-900 mt-12 pt-8 text-center text-gray-500 text-sm">
+                <p>&copy; 2026 Mis Finanzas. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Sistema de tema claro/oscuro
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeToggleMobile = document.getElementById('theme-toggle-mobile');
+        const html = document.documentElement;
+
+        // Verificar preferencia guardada o del sistema
+        if (localStorage.getItem('theme') === 'dark' || 
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            html.classList.add('dark');
+        }
+
+        function toggleTheme() {
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+        }
+
+        themeToggle.addEventListener('click', toggleTheme);
+        themeToggleMobile.addEventListener('click', toggleTheme);
+
+        // Navegación suave
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
