@@ -18,12 +18,10 @@
                         serif: ['Merriweather', 'Playfair Display', 'serif'],
                     },
                     colors: {
-                        // Tema Oscuro
                         azulmarino: { 900:'#0a1629', 800:'#122440', 700:'#1a3357', 600:'#22426e', 500:'#2a5185' },
                         arandano: { 600:'#3c2a6b', 500:'#513891', 400:'#664cb5' },
                         castañooscuro: { 600:'#5c3c21', 500:'#7a4f2c', 400:'#986537' },
                         grisoscuro: { 900:'#1f2023', 800:'#2c2d31', 700:'#393a40', 600:'#46474f' },
-                        // Tema Claro
                         serenity: { 50:'#f0f7fb', 100:'#d6eaf8', 200:'#bbddee', 300:'#9fd0e4', 400:'#84c3da' },
                         verdeclaro: { 50:'#f0fbf4', 100:'#d4f1df', 200:'#b8e7ca', 300:'#9cdcb5', 400:'#80d2a0' },
                         castañoclaro: { 50:'#fbf5ef', 100:'#f6e5d3', 200:'#f0d5b7', 300:'#ebc59b', 400:'#e5b57f' },
@@ -36,15 +34,13 @@
     <style>
         * { font-family: 'Merriweather', serif; }
         h1, h2, h3 { font-family: 'Playfair Display', serif; }
-        .bg-hero-oscuro { background: linear-gradient(180deg, #0a1629 0%, #1a3357 100%); }
         .bg-hero-claro { background: linear-gradient(180deg, #84c3da 0%, #b8e7ca 100%); }
+        .dark .bg-hero-claro { background: linear-gradient(180deg, #0a1629 0%, #1a3357 100%); }
         .modal { display: none; }
         .modal.activo { display: flex; }
-        body.dark { background-color: #1f2023; color: #e9e9eb; }
-        body.light { background-color: #f8f8f9; color: #1f2023; }
     </style>
 </head>
-<body class="light transition-colors duration-300">
+<body class="bg-serenity-50 dark:bg-grisoscuro-900 text-azulmarino-900 dark:text-serenity-50 transition-colors duration-300">
 
 <!-- BARRA SUPERIOR -->
 <header class="sticky top-0 z-50 bg-white/90 dark:bg-grisoscuro-800/90 backdrop-blur-sm border-b border-castañoclaro-200 dark:border-grisoscuro-700">
@@ -54,8 +50,8 @@
             <span class="text-2xl font-semibold text-azulmarino-800 dark:text-castañoclaro-300">Mis Finanzas</span>
         </div>
         <div class="flex items-center gap-3">
-            <button id="btn-bloqueo" class="p-2 rounded-lg hover:bg-castañoclaro-100 dark:hover:bg-grisoscuro-700 text-xl" title="Bloqueo de seguridad">🔒</button>
-            <button id="btn-tema" class="p-2 rounded-lg hover:bg-castañoclaro-100 dark:hover:bg-grisoscuro-700">
+            <button id="btn-bloqueo" class="p-2 rounded-lg hover:bg-castañoclaro-100 dark:hover:bg-grisoscuro-700 text-xl">🔒</button>
+            <button id="btn-tema" class="p-2 rounded-lg hover:bg-castañoclaro-100 dark:hover:bg-grisoscuro-700 text-xl">
                 <span id="icono-luz">🌙</span>
                 <span id="icono-oscuro" class="hidden">☀️</span>
             </button>
@@ -64,136 +60,126 @@
 </header>
 
 <!-- PANTALLA PRINCIPAL -->
-<div id="pantalla-inicio" class="bg-hero-claro dark:bg-hero-oscuro text-azulmarino-900 dark:text-white py-16 px-6">
+<div class="bg-hero-claro py-16 px-6">
     <div class="max-w-4xl mx-auto text-center">
         <h1 class="text-4xl md:text-5xl font-normal mb-4 leading-tight">
             Claridad y control para tu economía
         </h1>
-        <p id="saludo-principal" class="text-xl font-light mb-12 max-w-3xl mx-auto leading-relaxed">
+        <p id="saludo-principal" class="text-xl font-light mb-12 max-w-3xl mx-auto">
             Bienvenido
         </p>
         <div class="flex flex-col gap-4 max-w-md mx-auto">
-            <button id="btn-registro" class="bg-azulmarino-700 dark:bg-arandano-500 text-white py-4 px-6 rounded-xl text-xl font-medium shadow-lg hover:shadow-xl transition-all">
+            <button id="btn-registro" class="bg-azulmarino-700 text-white py-4 px-6 rounded-xl text-xl font-medium shadow-lg">
                 Crear cuenta gratis
             </button>
-            <button id="btn-ingreso" class="border-2 border-azulmarino-700 dark:border-white text-azulmarino-800 dark:text-white py-4 px-6 rounded-xl text-xl font-medium hover:bg-azulmarino-50 dark:hover:bg-white/10 transition-all">
+            <button id="btn-ingreso" class="border-2 border-azulmarino-700 dark:border-white text-azulmarino-800 dark:text-white py-4 px-6 rounded-xl text-xl font-medium">
                 Ya tengo cuenta
             </button>
         </div>
     </div>
 </div>
 
-<!-- PANEL USUARIO DESPUÉS DE INGRESAR -->
+<!-- PANEL USUARIO -->
 <div id="panel-usuario" class="hidden max-w-4xl mx-auto px-4 py-8">
-    <div class="bg-white dark:bg-grisoscuro-800 rounded-2xl p-6 shadow-lg mb-8 border border-castañoclaro-200 dark:border-grisoscuro-700">
+    <div class="bg-white dark:bg-grisoscuro-800 rounded-2xl p-6 shadow-lg mb-8">
         <h2 id="saludo-usuario" class="text-2xl font-normal mb-2"></h2>
-        <p class="text-grisclaro-600 dark:text-grisoscuro-300">Tu espacio para organizar y crecer con tranquilidad</p>
+        <p class="text-grisclaro-600 dark:text-grisoscuro-300">Tu espacio para crecer con tranquilidad</p>
     </div>
-    <button id="btn-cerrar-sesion" class="text-red-600 dark:text-red-400 text-center block w-full py-3 mt-4">Cerrar sesión</button>
+    <button id="btn-cerrar-sesion" class="text-red-600 dark:text-red-400 w-full text-center py-3">Cerrar sesión</button>
 </div>
 
 <!-- MODAL REGISTRO -->
 <div id="modal-registro" class="modal fixed inset-0 bg-black/60 items-center justify-center z-50 p-4">
-    <div class="bg-white dark:bg-grisoscuro-800 p-6 rounded-xl w-full max-w-md border border-castañoclaro-200 dark:border-grisoscuro-700">
-        <h3 class="text-xl font-bold mb-4 text-azulmarino-800 dark:text-white">Crear tu cuenta</h3>
+    <div class="bg-white dark:bg-grisoscuro-800 p-6 rounded-xl w-full max-w-md">
+        <h3 class="text-xl font-bold mb-4">Crear tu cuenta</h3>
         <form id="form-registro" class="space-y-4">
-            <input type="text" id="reg-nombre" placeholder="Nombre o como quieras que te llamemos" required class="w-full p-3 rounded-lg border border-castañoclaro-300 dark:border-grisoscuro-600 bg-castañoclaro-50 dark:bg-grisoscuro-900">
-            <input type="email" id="reg-email" placeholder="Tu correo electrónico" required class="w-full p-3 rounded-lg border border-castañoclaro-300 dark:border-grisoscuro-600 bg-castañoclaro-50 dark:bg-grisoscuro-900">
+            <input type="text" id="reg-nombre" placeholder="Tu nombre" required class="w-full p-3 rounded-lg border border-castañoclaro-300 dark:border-grisoscuro-600 bg-castañoclaro-50 dark:bg-grisoscuro-900">
+            <input type="email" id="reg-email" placeholder="Correo electrónico" required class="w-full p-3 rounded-lg border border-castañoclaro-300 dark:border-grisoscuro-600 bg-castañoclaro-50 dark:bg-grisoscuro-900">
             <div class="relative">
                 <input type="password" id="reg-pass" placeholder="Contraseña (mínimo 6 caracteres)" required minlength="6" class="w-full p-3 pr-12 rounded-lg border border-castañoclaro-300 dark:border-grisoscuro-600 bg-castañoclaro-50 dark:bg-grisoscuro-900">
                 <button type="button" id="ver-reg-pass" class="absolute right-3 top-1/2 -translate-y-1/2 text-xl">👁️</button>
             </div>
-            <p class="text-sm text-grisclaro-500 dark:text-grisoscuro-400">Te enviaremos un correo para confirmar tu cuenta</p>
-            <button type="submit" class="w-full py-3 rounded-lg bg-azulmarino-700 dark:bg-arandano-500 text-white">Crear cuenta</button>
+            <p class="text-sm text-grisclaro-500">Te enviaremos un correo de confirmación</p>
+            <button type="submit" class="w-full py-3 rounded-lg bg-azulmarino-700 text-white">Crear cuenta</button>
         </form>
-        <button class="mt-4 text-sm text-grisclaro-500 dark:text-grisoscuro-400" onclick="cerrarTodo()">Cerrar</button>
+        <button class="mt-4 text-sm text-grisclaro-500" onclick="cerrarTodo()">Cerrar</button>
     </div>
 </div>
 
 <!-- MODAL INGRESO -->
 <div id="modal-ingreso" class="modal fixed inset-0 bg-black/60 items-center justify-center z-50 p-4">
-    <div class="bg-white dark:bg-grisoscuro-800 p-6 rounded-xl w-full max-w-md border border-castañoclaro-200 dark:border-grisoscuro-700">
-        <h3 class="text-xl font-bold mb-4 text-azulmarino-800 dark:text-white">Ingresar</h3>
+    <div class="bg-white dark:bg-grisoscuro-800 p-6 rounded-xl w-full max-w-md">
+        <h3 class="text-xl font-bold mb-4">Ingresar</h3>
         <form id="form-ingreso" class="space-y-4">
             <input type="email" id="ing-email" placeholder="Tu correo" required class="w-full p-3 rounded-lg border border-castañoclaro-300 dark:border-grisoscuro-600 bg-castañoclaro-50 dark:bg-grisoscuro-900">
             <div class="relative">
                 <input type="password" id="ing-pass" placeholder="Contraseña" required class="w-full p-3 pr-12 rounded-lg border border-castañoclaro-300 dark:border-grisoscuro-600 bg-castañoclaro-50 dark:bg-grisoscuro-900">
                 <button type="button" id="ver-ing-pass" class="absolute right-3 top-1/2 -translate-y-1/2 text-xl">👁️</button>
             </div>
-            <p class="text-sm text-grisclaro-500 dark:text-grisoscuro-400">También puedes usar: huella, rostro, patrón o PIN</p>
-            <button type="submit" class="w-full py-3 rounded-lg bg-azulmarino-700 dark:bg-arandano-500 text-white">Entrar</button>
+            <button type="submit" class="w-full py-3 rounded-lg bg-azulmarino-700 text-white">Entrar</button>
         </form>
-        <button class="mt-4 text-sm text-grisclaro-500 dark:text-grisoscuro-400" onclick="cerrarTodo()">Cerrar</button>
+        <button class="mt-4 text-sm text-grisclaro-500" onclick="cerrarTodo()">Cerrar</button>
     </div>
 </div>
 
-<!-- MODAL BLOQUEO DE SEGURIDAD -->
+<!-- MODAL BLOQUEO -->
 <div id="modal-bloqueo" class="modal fixed inset-0 bg-black/60 items-center justify-center z-50 p-4">
-    <div class="bg-white dark:bg-grisoscuro-800 p-6 rounded-xl w-full max-w-md border border-castañoclaro-200 dark:border-grisoscuro-700">
-        <h3 class="text-xl font-bold mb-4 text-azulmarino-800 dark:text-white">🔒 Bloqueo de Seguridad</h3>
-        <p class="mb-4 text-grisclaro-600 dark:text-grisoscuro-300">Elige tu forma de desbloquear la app:</p>
+    <div class="bg-white dark:bg-grisoscuro-800 p-6 rounded-xl w-full max-w-md">
+        <h3 class="text-xl font-bold mb-4">🔒 Bloqueo de Seguridad</h3>
+        <p class="mb-4">Elige tu forma de desbloquear la app:</p>
         <div class="space-y-3">
-            <button class="w-full p-3 rounded-lg border border-castañoclaro-300 dark:border-grisoscuro-600 text-left" onclick="guardarBloqueo('biometrico')">👆 Huella o reconocimiento facial</button>
-            <button class="w-full p-3 rounded-lg border border-castañoclaro-300 dark:border-grisoscuro-600 text-left" onclick="guardarBloqueo('pin')">🔢 PIN numérico</button>
-            <button class="w-full p-3 rounded-lg border border-castañoclaro-300 dark:border-grisoscuro-600 text-left" onclick="guardarBloqueo('patron')">✏️ Patrón</button>
+            <button class="w-full p-3 rounded-lg border border-castañoclaro-300 text-left" onclick="guardarBloqueo('biometrico')">👆 Huella o rostro</button>
+            <button class="w-full p-3 rounded-lg border border-castañoclaro-300 text-left" onclick="guardarBloqueo('pin')">🔢 PIN numérico</button>
+            <button class="w-full p-3 rounded-lg border border-castañoclaro-300 text-left" onclick="guardarBloqueo('patron')">✏️ Patrón</button>
         </div>
-        <p id="tipo-bloqueo" class="mt-4 text-sm text-verdeclaro-600 dark:text-verdeclaro-400"></p>
-        <button class="mt-4 text-sm text-grisclaro-500 dark:text-grisoscuro-400" onclick="cerrarTodo()">Cerrar</button>
+        <p id="mensaje-bloqueo" class="mt-4 text-sm text-verdeclaro-600"></p>
+        <button class="mt-4 text-sm text-grisclaro-500" onclick="cerrarTodo()">Cerrar</button>
     </div>
 </div>
 
 <script>
-    // CONEXIÓN CON TU SUPABASE
+    // CONEXIÓN SUPABASE
     const SUPABASE_URL = "https://rvfwcbdroqjccxjwznkm.supabase.co";
     const SUPABASE_KEY = "sb_publishable_09BiXr7PFlLfDP3YfEZg-w_b_5UH0td";
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     // SALUDO SEGÚN HORARIO
     function obtenerSaludo(nombre = '') {
-        const hora = new Date().getHours();
-        let saludo = hora >= 5 && hora < 12 ? 'Buenos días' 
-                   : hora >= 12 && hora < 19 ? 'Buenas tardes' 
-                   : 'Buenas noches';
-        return nombre ? `${saludo}, ${nombre}` : saludo;
+        const h = new Date().getHours();
+        let s = h >= 5 && h < 12 ? 'Buenos días' : h >= 12 && h < 19 ? 'Buenas tardes' : 'Buenas noches';
+        return nombre ? `${s}, ${nombre}` : s;
     }
 
     // CARGAR TEMA GUARDADO
     function cargarTema() {
-        const temaGuardado = localStorage.getItem('tema');
-        if(temaGuardado === 'oscuro') {
-            document.body.classList.add('dark');
-            document.body.classList.remove('light');
+        if(localStorage.getItem('tema') === 'oscuro') {
+            document.documentElement.classList.add('dark');
             document.getElementById('icono-luz').classList.add('hidden');
             document.getElementById('icono-oscuro').classList.remove('hidden');
-        } else {
-            document.body.classList.remove('dark');
-            document.body.classList.add('light');
-            document.getElementById('icono-luz').classList.remove('hidden');
-            document.getElementById('icono-oscuro').classList.add('hidden');
         }
     }
     cargarTema();
 
     // CAMBIAR TEMA
     document.getElementById('btn-tema').addEventListener('click', () => {
-        const esOscuro = document.body.classList.toggle('dark');
-        document.body.classList.toggle('light', !esOscuro);
-        localStorage.setItem('tema', esOscuro ? 'oscuro' : 'claro');
-        document.getElementById('icono-luz').classList.toggle('hidden', esOscuro);
-        document.getElementById('icono-oscuro').classList.toggle('hidden', !esOscuro);
+        document.documentElement.classList.toggle('dark');
+        const oscuro = document.documentElement.classList.contains('dark');
+        localStorage.setItem('tema', oscuro ? 'oscuro' : 'claro');
+        document.getElementById('icono-luz').classList.toggle('hidden', oscuro);
+        document.getElementById('icono-oscuro').classList.toggle('hidden', !oscuro);
     });
 
     // VISOR DE CONTRASEÑA
-    function activarVisor(botonId, inputId) {
-        document.getElementById(botonId).addEventListener('click', () => {
-            const input = document.getElementById(inputId);
-            input.type = input.type === 'password' ? 'text' : 'password';
+    function activarVisor(boton, input) {
+        document.getElementById(boton).addEventListener('click', () => {
+            const campo = document.getElementById(input);
+            campo.type = campo.type === 'password' ? 'text' : 'password';
         });
     }
     activarVisor('ver-reg-pass', 'reg-pass');
     activarVisor('ver-ing-pass', 'ing-pass');
 
-    // ABRIR Y CERRAR MODALES
+    // ABRIR MODALES
     document.getElementById('btn-registro').addEventListener('click', () => {
         document.getElementById('modal-registro').classList.add('activo');
     });
@@ -207,14 +193,14 @@
         document.querySelectorAll('.modal').forEach(m => m.classList.remove('activo'));
     }
 
-    // GUARDAR TIPO DE BLOQUEO
+    // GUARDAR BLOQUEO
     window.guardarBloqueo = function(tipo) {
         localStorage.setItem('bloqueo', tipo);
-        const nombres = { biometrico:'Huella / Rostro', pin:'PIN numérico', patron:'Patrón' };
-        document.getElementById('tipo-bloqueo').textContent = `✅ Bloqueo guardado: ${nombres[tipo]}`;
+        const nom = { biometrico:'Huella/Rostro', pin:'PIN', patron:'Patrón' };
+        document.getElementById('mensaje-bloqueo').textContent = `✅ Guardado: ${nom[tipo]}`;
     };
 
-    // REGISTRO REAL CON CONFIRMACIÓN POR CORREO
+    // REGISTRO REAL
     document.getElementById('form-registro').addEventListener('submit', async e => {
         e.preventDefault();
         const nombre = document.getElementById('reg-nombre').value.trim();
@@ -222,45 +208,35 @@
         const pass = document.getElementById('reg-pass').value;
 
         const { error } = await supabase.auth.signUp({
-            email: email,
-            password: pass,
-            options: { 
-                data: { nombre: nombre },
-                emailRedirectTo: window.location.href
-            }
+            email, password: pass,
+            options: { data: { nombre }, emailRedirectTo: window.location.href }
         });
 
-        if(error) {
-            alert(`⚠️ ${error.message}`);
-        } else {
-            alert('✅ ¡Cuenta creada con éxito! Te enviamos un correo para confirmar tu dirección. Por favor revisa tu bandeja de entrada.');
-        }
+        if(error) alert(`⚠️ ${error.message}`);
+        else alert('✅ ¡Cuenta creada! Revisa tu correo para confirmarla.');
         cerrarTodo();
     });
 
-    // INICIO DE SESIÓN REAL
+    // INGRESO REAL
     document.getElementById('form-ingreso').addEventListener('submit', async e => {
         e.preventDefault();
         const email = document.getElementById('ing-email').value.trim();
         const pass = document.getElementById('ing-pass').value;
 
         const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
-        if(error) {
-            alert(`⚠️ ${error.message}`);
-        } else {
-            alert('✅ ¡Bienvenido de vuelta!');
-        }
+        if(error) alert(`⚠️ ${error.message}`);
+        else alert('✅ ¡Bienvenido!');
         cerrarTodo();
     });
 
-    // VERIFICAR SESIÓN ACTIVA
+    // VERIFICAR SESIÓN
     async function verificarSesion() {
         const { data: { session } } = await supabase.auth.getSession();
         if(session) {
             const nombre = session.user.user_metadata?.nombre || session.user.email.split('@')[0];
             document.getElementById('saludo-principal').textContent = obtenerSaludo(nombre);
             document.getElementById('saludo-usuario').textContent = `${obtenerSaludo(nombre)} 👋`;
-            document.getElementById('pantalla-inicio').classList.add('hidden');
+            document.querySelector('.bg-hero-claro').classList.add('hidden');
             document.getElementById('panel-usuario').classList.remove('hidden');
         }
     }
