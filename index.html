@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Finanzas</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['Merriweather', 'Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        azul: { 900:'#0f1e36', 800:'#162d4d', 700:'#1d3c63', 600:'#244b7a', 500:'#2b5a91', 400:'#3269a8' },
+                        gris: { 900:'#1a1a1f', 800:'#27272f', 700:'#34343f', 600:'#41414f', 500:'#5e5e6e', 400:'#7b7b8d' },
+                        dorado: { 600:'#b8860b', 500:'#daa520', 400:'#e6b83a' },
+                        calido: { 50:'#fff9f0', 100:'#fff3e0', 200:'#ffe8c2', 300:'#ffdca4' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { font-family: 'Merriweather', serif; }
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
+        .bg-hero { background: linear-gradient(180deg, #1d3c63 0%, #2b5a91 100%); }
+        .dark .bg-hero { background: linear-gradient(180deg, #0f1e36 0%, #162d4d 100%); }
+        .pantalla { display: none; }
+        .pantalla.activa { display: block; }
+        .modal { display: none; }
+        .modal.activo { display: flex; }
+    </style>
+</head>
+<body class="bg-calido-50 dark:bg-gris-900 text-gris-800 dark:text-calido-100 min-h-screen transition-colors duration-300">
+
+<!-- BARRA SUPERIOR -->
+<header class="sticky top-0 z-50 bg-white/90 dark:bg-gris-800/90 backdrop-blur-sm border-b border-calido-200 dark:border-gris-700">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+        <div class="flex items-center gap-2 cursor-pointer" onclick="mostrarPantalla('inicio')">
+            <span class="text-2xl text-azul-700 dark:text-dorado-400">🖩</span>
+            <span class="text-2xl font-semibold text-azul-800 dark:text-dorado-300">Mis Finanzas</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <button id="btn-tema" class="p-2 rounded-lg hover:bg-calido-100 dark:hover:bg-gris-700">
+                <span id="icono-luz">🌙</span>
+                <span id="icono-oscuro" class="hidden">☀️</span>
+            </button>
+            <button id="btn-menu" class="text-2xl text-gris-600 dark:text-gris-300">☰</button>
+        </div>
+    </div>
+</header>
+
+<!-- PANTALLA 1: INICIO -->
+<section id="pantalla-inicio" class="pantalla activa">
+    <div class="bg-hero text-white py-16 px-6">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-4xl md:text-5xl font-normal mb-8 leading-tight">
+                Claridad y control para tu economía
+            </h1>
+            <p class="text-xl font-light mb-12 max-w-3xl mx-auto leading-relaxed">
+                Mis Finanzas te acompaña hacia la estabilidad económica. Comprendé tus hábitos, optimizá tus gastos y construí ahorros sostenibles.
+            </p>
+            <div class="flex flex-col gap-4 max-w-md mx-auto">
+                <button onclick="mostrarPantalla('planes')" class="bg-white text-azul-800 py-4 px-6 rounded-xl text-xl font-medium shadow-lg">
+                    Explorar planes
+                </button>
+                <button onclick="abrirModal('registro')" class="border-2 border-white text-white py-4 px-6 rounded-xl text-xl font-medium hover:bg-white/10">
+                    Crear cuenta gratis
+                </button>
+            </div>
+            <p class="mt-8 text-sm opacity-90">
+                Plan mensual con 7 días de prueba sin costo • Cancelación inmediata
+            </p>
+        </div>
+    </div>
+
+    <main class="max-w-4xl mx-auto px-4 py-12">
+        <h2 class="text-3xl font-normal text-center mb-12 text-azul-800 dark:text-dorado-300">Por qué Mis Finanzas es diferente</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white dark:bg-gris-800 p-6 rounded-xl shadow">
+                <h3 class="text-xl font-medium mb-2">No te juzga, te acompaña</h3>
+                <p class="text-gris-600 dark:text-gris-300">Entendemos que la vida pasa. Convertimos cada desliz en una oportunidad de aprender.</p>
+            </div>
+            <div class="bg-white dark:bg-gris-800 p-6 rounded-xl shadow">
+                <h3 class="text-xl font-medium mb-2">Adaptado a vos</h3>
+                <p class="text-gris-600 dark:text-gris-300">Consejos y estrategias pensadas en tu forma de ser, no reglas generales para todos.</p>
+            </div>
+        </div>
+    </main>
+</section>
+
+<!-- PANTALLA 2: PLANES -->
+<section id="pantalla-planes" class="pantalla max-w-4xl mx-auto px-4 py-12">
+    <h2 class="text-3xl font-normal text-center mb-10 text-azul-800 dark:text-dorado-300">Nuestros Planes</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white dark:bg-gris-800 p-6 rounded-xl shadow border border-calido-300 dark:border-gris-600">
+            <h3 class="text-xl font-medium">Básico</h3>
+            <p class="text-2xl font-bold my-3">$3.99 USD / mes</p>
+            <p class="text-gris-600 dark:text-gris-300 mb-4">Registro de movimientos, resúmenes y gráficas simples.</p>
+            <button class="w-full py-3 rounded-lg bg-azul-600 text-white">Elegir plan</button>
+        </div>
+        <div class="bg-white dark:bg-gris-800 p-6 rounded-xl shadow border border-dorado-500 relative">
+            <span class="absolute -top-3 right-4 bg-dorado-500 text-black text-sm px-3 rounded">7 días gratis</span>
+            <h3 class="text-xl font-medium">Premium</h3>
+            <p class="text-2xl font-bold my-3">$6.99 USD / mes</p>
+            <p class="text-gris-600 dark:text-gris-300 mb-4">Todo lo básico + acompañamiento personalizado y predicciones.</p>
+            <button class="w-full py-3 rounded-lg bg-azul-600 text-white">Elegir plan</button>
+        </div>
+        <div class="bg-white dark:bg-gris-800 p-6 rounded-xl shadow border border-calido-300 dark:border-gris-600">
+            <h3 class="text-xl font-medium">Familia</h3>
+            <p class="text-2xl font-bold my-3">$9.99 USD / mes</p>
+            <p class="text-gris-600 dark:text-gris-300 mb-4">Todo Premium + hasta 5 cuentas vinculadas y metas compartidas.</p>
+            <button class="w-full py-3 rounded-lg bg-azul-600 text-white">Elegir plan</button>
+        </div>
+        <div class="bg-white dark:bg-gris-800 p-6 rounded-xl shadow border border-calido-300 dark:border-gris-600">
+            <h3 class="text-xl font-medium">Anual</h3>
+            <p class="text-2xl font-bold my-3">$99.99 USD</p>
+            <p class="text-gris-600 dark:text-gris-300 mb-4">Acceso completo por todo el año con descuento incluido.</p>
+            <button class="w-full py-3 rounded-lg bg-azul-600 text-white">Pagar con Mercado Pago / Tarjeta</button>
+        </div>
+    </div>
+</section>
+
+<!-- PANTALLA 3: PANEL USUARIO -->
+<section id="pantalla-usuario" class="pantalla max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white dark:bg-gris-800 rounded-2xl p-6 shadow-lg mb-8">
+        <h3 class="text-2xl font-normal mb-2" id="saludo-personalizado">Buenos días,</h3>
+        <p class="text-gris-600 dark:text-gris-300">Tu espacio para organizar y crecer con tranquilidad</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div class="bg-white dark:bg-gris-800 p-6 rounded-xl shadow">
+            <p class="text-sm text-gris-500">Saldo Total</p>
+            <p class="text-2xl font-semibold">$ 0.00 USD</p>
+        </div>
+        <div class="bg-white dark:bg-gris-800 p-6 rounded-xl shadow">
+            <p class="text-sm text-gris-500">Ingresos del mes</p>
+            <p class="text-2xl font-semibold text-green-600">$ 0.00 USD</p>
+        </div>
+        <div class="bg-white dark:bg-gris-800 p-6 rounded-xl shadow">
+            <p class="text-sm text-gris-500">Gastos del mes</p>
+            <p class="text-2xl font-semibold text-red-500">$ 0.00 USD</p>
+        </div>
+    </div>
+
+    <div class="bg-white dark:bg-gris-800 p-6 rounded-xl shadow mb-8">
+        <h3 class="text-xl font-normal mb-4">Tu Crecimiento Monetario</h3>
+        <canvas id="grafico-crecimiento" height="250"></canvas>
+    </div>
+
+    <div class="bg-white dark:bg-gris-800 p-6 rounded-xl shadow mb-8">
+        <h3 class="text-xl font-normal mb-3">💛 Acompañamiento</h3>
+        <p class="text-gris-600 dark:text-gris-300 mb-4">¡Cada pequeño paso que des es un gran logro! No te preocupes si te equivocas, lo importante es aprender y seguir avanzando.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button class="p-3 rounded-lg bg-calido-100 dark:bg-gris-700 text-left">Consejos para gastar con conciencia</button>
+            <button class="p-3 rounded-lg bg-calido-100 dark:bg-gris-700 text-left">¿Cómo empezar a ahorrar sin sufrir?</button>
+        </div>
+    </div>
+
+    <button onclick="cerrarSesion()" class="text-red-500 text-center block w-full mt-8">Cerrar sesión</button>
+</section>
+
+<!-- PANTALLA 4: PANEL ADMINISTRADOR -->
+<section id="pantalla-admin" class="pantalla max-w-4xl mx-auto px-4 py-8">
+    <h2 class="text-2xl font-bold mb-6 border-b border-calido-300 dark:border-gris-700 pb-2">🔧 Panel de Administración</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div class="bg-white dark:bg-gris-800 p-6 rounded-xl">
+            <h3 class="font-semibold mb-4">Crecimiento de Usuarios</h3>
+            <canvas id="grafico-usuarios" height="200"></canvas>
+        </div>
+        <div class="bg-white dark:bg-gris-800 p-6 rounded-xl">
+            <h3 class="font-semibold mb-4">Ingresos Totales</h3>
+            <canvas id="grafico-ingresos" height="200"></canvas>
+        </div>
+    </div>
+    <div class="bg-white dark:bg-gris-800 p-6 rounded-xl">
+        <h3 class="font-semibold mb-3">Gestión de Pagos</h3>
+        <p class="text-gris-600 dark:text-gris-300">Conexión activa con Mercado Pago y pasarela de tarjetas para confirmar cobros y administrar suscripciones.</p>
+    </div>
+</section>
+
+<!-- MODALES DE REGISTRO E INGRESO -->
+<div id="modal-registro" class="modal fixed inset-0 bg-black/60 items-center justify-center z-50 p-4">
+    <div class="bg-white dark:bg-gris-800 p-6 rounded-xl w-full max-w-md">
+        <h3 class="text-xl font-bold mb-4">Crear tu cuenta</h3>
+        <form id="form-registro" class="space-y-4">
+            <input type="text" id="reg-nombre" placeholder="Nombre o alias" required class="w-full p-3 rounded-lg border border-calido-300 dark:border-gris-600 bg-calido-50 dark:bg-gris-900">
+            <input type="email" id="reg-email" placeholder="Tu correo electrónico" required class="w-full p-3 rounded-lg border border-calido-300 dark:border-gris-600 bg-calido-50 dark:bg-gris-900">
+            <input type="password" id="reg-pass" placeholder="Contraseña (mínimo 6 caracteres)" required minlength="6" class="w-full p-3 rounded-lg border border-calido-300 dark:border-gris-600 bg-calido-50 dark:bg-gris-900">
+            <p class="text-sm text-gris-500">Te enviaremos un correo para confirmar tu cuenta</p>
+            <button type="submit" class="w-full py-3 rounded-lg bg-azul-600 text-white">Crear cuenta</button>
+        </form>
+        <button onclick="cerrarModal('registro')" class="mt-4 text-sm text-gris-500">Cerrar</button>
+    </div>
+</div>
+
+<div id="modal-ingreso" class="modal fixed inset-0 bg-black/60 items-center justify-center z-50 p-4">
+    <div class="bg-white dark:bg-gris-800 p-6 rounded-xl w-full max-w-md">
+        <h3 class="text-xl font-bold mb-4">Ingresar a Mis Finanzas</h3>
+        <form id="form-ingreso" class="space-y-4">
+            <input type="email" id="ing-email" placeholder="Tu correo" required class="w-full p-3 rounded-lg border border-calido-300 dark:border-gris-600 bg-calido-50 dark:bg-gris-900">
+            <input type="password" id="ing-pass" placeholder="Contraseña" required class="w-full p-3 rounded-lg border border-calido-300 dark:border-gris-600 bg-calido-50 dark:bg-gris-900">
+            <button type="submit" class="w-full py-3 rounded-lg bg-azul-600 text-white">Ingresar</button>
+        </form>
+        <button onclick="cerrarModal('ingreso')" class="mt-4 text-sm text-gris-500">Cerrar</button>
+    </div>
+</div>
+
+<script>
+    // DATOS DE TU CUENTA SUPABASE
+    const SUPABASE_URL = "https://rvfwcbdroqjccxjwznkm.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_09BiXr7PFlLfDP3YfEZg-w_b_5UH0td";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // GESTIÓN DE TEMAS
+    function inicializarTema() {
+        if(localStorage.getItem('tema') === 'oscuro' || (!localStorage.getItem('tema') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            document.getElementById('icono-luz').classList.add('hidden');
+            document.getElementById('icono-oscuro').classList.remove('hidden');
+        }
+    }
+    inicializarTema();
+
+    document.getElementById('btn-tema').addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        const esOscuro = document.documentElement.classList.contains('dark');
+        localStorage.setItem('tema', esOscuro ? 'oscuro' : 'claro');
+        document.getElementById('icono-luz').classList.toggle('hidden', esOscuro);
+        document.getElementById('icono-oscuro').classList.toggle('hidden', !esOscuro);
+    });
+
+    // NAVEGACIÓN ENTRE PANTALLAS
+    function mostrarPantalla(nombre) {
+        document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
+        document.getElementById(`pantalla-${nombre}`).classList.add('activa');
+    }
+
+    // GESTIÓN DE MODALES
+    function abrirModal(tipo) {
+        document.getElementById(`modal-${tipo}`).classList.add('activo');
+    }
+    function cerrarModal(tipo) {
+        document.getElementById(`modal-${tipo}`).classList.remove('activo');
+    }
+    document.getElementById('btn-menu').addEventListener('click', () => abrirModal('ingreso'));
+
+    // SALUDO SEGÚN HORARIO
+    function obtenerSaludo(usuario = '') {
+        const hora = new Date().getHours();
+        let saludo = hora >= 5 && hora < 12 ? 'Buenos días' : hora >= 12 && hora < 19 ? 'Buenas tardes' : 'Buenas noches';
+        return usuario ? `${saludo}, ${usuario}` : saludo;
+    }
+
+    // AUTENTICACIÓN
+    document.getElementById('form-registro').addEventListener('submit', async e => {
+        e.preventDefault();
+        const nombre = document.getElementById('reg-nombre').value.trim();
+        const email = document.getElementById('reg-email').value.trim();
+        const pass = document.getElementById('reg-pass').value;
+
+        const { error } = await supabase.auth.signUp({
+            email, password: pass,
+            options: { data: { nombre }, emailRedirectTo: window.location.href }
+        });
+
+        if(error) alert('Error: ' + error.message);
+        else alert('¡Cuenta creada! Te enviamos un correo para confirmar ✅');
+        cerrarModal('registro');
+    });
+
+    document.getElementById('form-ingreso').addEventListener('submit', async e => {
+        e.preventDefault();
+        const email = document.getElementById('ing-email').value.trim();
+        const pass = document.getElementById('ing-pass').value;
+
+        const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
+        if(error) alert('Error: ' + error.message);
+        cerrarModal('ingreso');
+    });
+
+    async function cerrarSesion() {
+        await supabase.auth.signOut();
+        location.reload();
+    }
+
+    // VERIFICAR SESIÓN Y CARGAR DATOS
+    async function verificarSesion() {
+        const { data: { session } } = await supabase.auth.getSession();
+        if(session) {
+            const nombre = session.user.user_metadata?.nombre || session.user.email.split('@')[0];
+            document.getElementById('saludo-personalizado').textContent = obtenerSaludo(nombre);
+            
+            // Mostrar panel administrador si es tu correo
+            if(session.user.email === 'tu.correo.administrador@ejemplo.com') {
+                mostrarPantalla('admin');
+                iniciarGraficosAdmin();
+            } else {
+                mostrarPantalla('usuario');
+                iniciarGraficosUsuario();
+            }
+        }
+    }
+
+    // GRÁFICAS
+    function iniciarGraficosUsuario() {
+        const colorTexto = document.documentElement.classList.contains('dark') ? '#b5b5cb' : '#41414f';
+        new Chart(document.getElementById('grafico-crecimiento'), {
+            type: 'line',
+            data: {
+                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul'],
+                datasets: [{
+                    label: 'Ahorro acumulado (USD)',
+                    data: [120, 250, 310, 480, 620, 750, 900],
+                    borderColor: '#daa520',
+                    backgroundColor: 'rgba(218, 165, 32, 0.15)',
+                    fill: true, tension: 0.3
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { labels: { color: colorTexto } } }, scales: { x: { ticks: {color:colorTexto} }, y: { ticks: {color:colorTexto} } } }
+        });
+    }
+
+    function iniciarGraficosAdmin() {
+        const colorTexto = document.documentElement.classList.contains('dark') ? '#b5b5cb' : '#41414f';
+        new Chart(document.getElementById('grafico-usuarios'), {
+            type: 'bar',
+            data: { labels: ['Ene','Feb','Mar','Abr','May','Jun'], datasets: [{ label: 'Usuarios totales', data: [12,35,68,110,180,245], backgroundColor: '#2b5a91' }] },
+            options: { responsive: true, plugins: { legend: { labels: { color: colorTexto } } }, scales: { x: { ticks: {color:colorTexto} }, y: { ticks: {color:colorTexto} } } }
+        });
+        new Chart(document.getElementById('grafico-ingresos'), {
+            type: 'line',
+            data: { labels: ['Ene','Feb','Mar','Abr','May','Jun'], datasets: [{ label: 'Ingresos totales USD', data: [150,420,780,1300,2100,3200], borderColor: '#daa520', tension: 0.3 }] },
+            options: { responsive: true, plugins: { legend: { labels: { color: colorTexto } } }, scales: { x: { ticks: {color:colorTexto} }, y: { ticks: {color:colorTexto} } } }
+        });
+    }
+
+    supabase.auth.onAuthStateChange(verificarSesion);
+    verificarSesion();
+</script>
+
+</body>
+</html>
