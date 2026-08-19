@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Finanzas - Controlá tu economía con confianza</title>
+    <!-- SUPABASE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -53,8 +55,14 @@
                         <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                         <svg class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
                     </button>
-                    <button id="btn-login" class="text-primary dark:text-primary-light font-medium hover:underline">Iniciar sesión</button>
-                    <button id="btn-register" class="bg-primary dark:bg-primary-light text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition font-medium">Registrarse</button>
+                    <div id="auth-buttons" class="flex items-center space-x-3">
+                        <button id="btn-login" class="text-primary dark:text-primary-light font-medium hover:underline">Iniciar sesión</button>
+                        <button id="btn-register" class="bg-primary dark:bg-primary-light text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition font-medium">Registrarse</button>
+                    </div>
+                    <div id="user-menu" class="hidden items-center space-x-3">
+                        <span id="user-name" class="text-gray-700 dark:text-gray-200 font-medium"></span>
+                        <button id="btn-logout" class="text-red-500 hover:text-red-600 font-medium">Cerrar sesión</button>
+                    </div>
                 </div>
                 <div class="md:hidden flex items-center space-x-2">
                     <button id="theme-toggle-mobile" class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition">
@@ -265,16 +273,16 @@
             <form id="form-login" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Correo electrónico</label>
-                    <input type="email" required class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                    <input type="email" id="login-email" required class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contraseña</label>
-                    <input type="password" required class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                    <input type="password" id="login-password" required class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
                 </div>
                 <div class="text-right">
                     <a href="#" class="text-sm text-primary dark:text-primary-light hover:underline">¿Olvidaste tu contraseña?</a>
                 </div>
-                <button type="submit" class="w-full bg-primary dark:bg-primary-light text-white py-3 rounded-lg font-semibold hover:bg-primary-dark transition">Iniciar sesión</button>
+                <button type="submit" id="btn-login-submit" class="w-full bg-primary dark:bg-primary-light text-white py-3 rounded-lg font-semibold hover:bg-primary-dark transition">Iniciar sesión</button>
             </form>
             <p class="text-center mt-6 text-sm text-gray-600 dark:text-gray-400">
                 ¿No tenés cuenta? <button id="go-register" class="text-primary dark:text-primary-light font-medium hover:underline">Registrarse</button>
@@ -292,26 +300,26 @@
             <form id="form-register" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre completo</label>
-                    <input type="text" required class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                    <input type="text" id="register-name" required class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Correo electrónico</label>
-                    <input type="email" required class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                    <input type="email" id="register-email" required class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contraseña</label>
-                    <input type="password" required minlength="6" class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                    <input type="password" id="register-password" required minlength="6" class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Mínimo 6 caracteres</p>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirmar contraseña</label>
-                    <input type="password" required class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                    <input type="password" id="register-confirm" required class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
                 </div>
                 <div class="flex items-start">
                     <input type="checkbox" required id="terminos" class="mt-1 mr-2">
                     <label for="terminos" class="text-sm text-gray-600 dark:text-gray-400">Acepto los <a href="#" class="text-primary hover:underline">Términos de servicio</a> y la <a href="#" class="text-primary hover:underline">Política de privacidad</a></label>
                 </div>
-                <button type="submit" class="w-full bg-primary dark:bg-primary-light text-white py-3 rounded-lg font-semibold hover:bg-primary-dark transition">Crear cuenta</button>
+                <button type="submit" id="btn-register-submit" class="w-full bg-primary dark:bg-primary-light text-white py-3 rounded-lg font-semibold hover:bg-primary-dark transition">Crear cuenta</button>
             </form>
             <p class="text-center mt-6 text-sm text-gray-600 dark:text-gray-400">
                 ¿Ya tenés cuenta? <button id="go-login" class="text-primary dark:text-primary-light font-medium hover:underline">Iniciar sesión</button>
@@ -320,6 +328,13 @@
     </div>
 
     <script>
+        // ==============================================
+        // 🔑 CONEXIÓN CON SUPABASE - TUS DATOS YA ESTÁN
+        // ==============================================
+        const SUPABASE_URL = "https://rvfwcbdroqjccxjwznkm.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_09BiXr7PFlLfDP3YfEZg-w_b_5UH0td";
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
         // Tema claro/oscuro
         const themeToggle = document.getElementById('theme-toggle');
         const themeToggleMobile = document.getElementById('theme-toggle-mobile');
@@ -341,6 +356,9 @@
         // MODALES: Login y Registro
         const modalLogin = document.getElementById('modal-login');
         const modalRegister = document.getElementById('modal-register');
+        const authButtons = document.getElementById('auth-buttons');
+        const userMenu = document.getElementById('user-menu');
+        const userName = document.getElementById('user-name');
         const btnLogin = document.getElementById('btn-login');
         const btnRegister = document.getElementById('btn-register');
         const btnRegisterHero = document.getElementById('btn-register-hero');
@@ -348,6 +366,7 @@
         const closeRegister = document.getElementById('close-register');
         const goRegister = document.getElementById('go-register');
         const goLogin = document.getElementById('go-login');
+        const btnLogout = document.getElementById('btn-logout');
 
         function openModal(modal) {
             modal.classList.remove('hidden');
@@ -385,17 +404,87 @@
             if (e.target === modalRegister) closeModal(modalRegister);
         });
 
-        // Formularios con mensajes personalizados
-        document.getElementById('form-login').addEventListener('submit', (e) => {
-            e.preventDefault();
-            alert('¡Bienvenido/a de nuevo a Mis Finanzas! 🎉\n\nEstás conectado/a correctamente.');
-            closeModal(modalLogin);
+        // ==============================================
+        // 🔐 AUTENTICACIÓN CON SUPABASE
+        // ==============================================
+
+        // Actualizar interfaz según sesión
+        function updateAuthUI(user) {
+            if (user) {
+                authButtons.classList.add('hidden');
+                userMenu.classList.remove('hidden');
+                userMenu.classList.add('flex');
+                userName.textContent = user.user_metadata?.name || user.email;
+            } else {
+                authButtons.classList.remove('hidden');
+                authButtons.classList.add('flex');
+                userMenu.classList.add('hidden');
+                userMenu.classList.remove('flex');
+            }
+        }
+
+        // Verificar sesión al cargar
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            updateAuthUI(session?.user);
         });
 
-        document.getElementById('form-register').addEventListener('submit', (e) => {
+        // Escuchar cambios de sesión
+        supabase.auth.onAuthStateChange((_event, session) => {
+            updateAuthUI(session?.user);
+        });
+
+        // REGISTRO
+        document.getElementById('form-register').addEventListener('submit', async (e) => {
             e.preventDefault();
-            alert('¡Mis Finanzas agradece tu registro! 🎉\n\nTu cuenta se creó con éxito. En breve podrás acceder a todas las funciones.');
-            closeModal(modalRegister);
+            const name = document.getElementById('register-name').value.trim();
+            const email = document.getElementById('register-email').value.trim();
+            const password = document.getElementById('register-password').value;
+            const confirm = document.getElementById('register-confirm').value;
+
+            if (password !== confirm) {
+                alert('Las contraseñas no coinciden');
+                return;
+            }
+
+            const { data, error } = await supabase.auth.signUp({
+                email,
+                password,
+                options: {
+                    data: { name }
+                }
+            });
+
+            if (error) {
+                alert('Error: ' + error.message);
+            } else {
+                alert('¡Mis Finanzas agradece tu registro! 🎉\n\nRevisá tu correo para confirmar tu cuenta.');
+                closeModal(modalRegister);
+            }
+        });
+
+        // INICIO DE SESIÓN
+        document.getElementById('form-login').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password
+            });
+
+            if (error) {
+                alert('Error: ' + error.message);
+            } else {
+                alert('¡Bienvenido/a de nuevo a Mis Finanzas! 🎉');
+                closeModal(modalLogin);
+            }
+        });
+
+        // CERRAR SESIÓN
+        btnLogout.addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            alert('Sesión cerrada correctamente. ¡Volvé pronto! 👋');
         });
 
         // Navegación suave
