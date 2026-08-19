@@ -1,502 +1,309 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Finanzas - Controlá tu economía con confianza</title>
-    <!-- SUPABASE -->
+    <title>Mi Finanzas</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        primary: { light: '#4a90e2', DEFAULT: '#2c5282', dark: '#1a365d' },
-                        secondary: { light: '#68d391', DEFAULT: '#48bb78', dark: '#2f855a' },
-                        surface: { warm: '#f7fafc', dark: '#171923' },
-                        background: { light: '#f5f7fa', dark: '#1a202c' },
-                        text: { light: '#2d3748', muted: '#718096', dark: '#e2e8f0' }
+                        azul: { 900:'#0f172a', 800:'#1e293b', 700:'#334155', 600:'#1d4ed8', 500:'#3b82f6', 400:'#60a5fa' },
+                        gris: { 900:'#18181b', 800:'#27272a', 700:'#3f3f46', 600:'#52525b', 500:'#71717a', 400:'#a1a1aa' },
+                        dorado: { 600:'#ca8a04', 500:'#eab308', 400:'#facc15', 300:'#fde047' },
+                        claro: { 50:'#fffbf5', 100:'#fff7ed', 200:'#ffedd5', 300:'#fed7aa' }
                     },
                     fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
                 }
             }
         }
     </script>
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .gradient-bg-light { background: linear-gradient(135deg, #1a365d 0%, #2c5282 50%, #3182ce 100%); }
-            .gradient-bg-dark { background: linear-gradient(135deg, #1a202c 0%, #171923 50%, #2d3748 100%); }
-            .card-hover { transition: all 0.3s ease; }
-            .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-            .modal-backdrop { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
-        }
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .card { transition: all 0.3s ease; }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
     </style>
 </head>
-<body class="font-sans bg-background-light text-text-light dark:bg-background-dark dark:text-text-dark transition-colors duration-300">
-    
-    <!-- Navegación -->
-    <nav class="bg-surface-warm dark:bg-surface-dark shadow-sm sticky top-0 z-50 transition-colors duration-300 border-b border-gray-100 dark:border-gray-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center">
-                    <svg class="w-8 h-8 text-primary dark:text-primary-light mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                    </svg>
-                    <span class="text-xl font-bold text-primary dark:text-primary-light">Mis Finanzas</span>
+<body class="bg-claro-50 dark:bg-gris-900 text-gris-800 dark:text-claro-100 min-h-screen transition-colors duration-300">
+
+    <!-- NAVEGACIÓN -->
+    <header class="sticky top-0 z-50 bg-white/90 dark:bg-gris-800/90 backdrop-blur border-b border-claro-200 dark:border-gris-700">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-azul-700 dark:text-dorado-400">Mi Finanzas</h1>
+            <div class="flex items-center gap-4">
+                <button id="cambiar-tema" class="p-2 rounded-full hover:bg-claro-200 dark:hover:bg-gris-700">🌙</button>
+                <div id="botones-auth">
+                    <button id="btn-ingresar" class="px-4 py-2 rounded-lg border border-azul-600 text-azul-700 dark:text-azul-300 mr-2">Ingresar</button>
+                    <button id="btn-registrar" class="px-4 py-2 rounded-lg bg-azul-600 text-white">Registrarse</button>
                 </div>
-                <div class="hidden md:flex items-center space-x-6">
-                    <a href="#beneficios" class="text-gray-600 dark:text-gray-300 hover:text-primary transition">Beneficios</a>
-                    <a href="#como-funciona" class="text-gray-600 dark:text-gray-300 hover:text-primary transition">Cómo funciona</a>
-                    <a href="#precios" class="text-gray-600 dark:text-gray-300 hover:text-primary transition">Planes</a>
-                    <button id="theme-toggle" class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition">
-                        <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                        <svg class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
-                    </button>
-                    <div id="auth-buttons" class="flex items-center space-x-3">
-                        <button id="btn-login" class="text-primary dark:text-primary-light font-medium hover:underline">Iniciar sesión</button>
-                        <button id="btn-register" class="bg-primary dark:bg-primary-light text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition font-medium">Registrarse</button>
-                    </div>
-                    <div id="user-menu" class="hidden items-center space-x-3">
-                        <span id="user-name" class="text-gray-700 dark:text-gray-200 font-medium"></span>
-                        <button id="btn-logout" class="text-red-500 hover:text-red-600 font-medium">Cerrar sesión</button>
-                    </div>
-                </div>
-                <div class="md:hidden flex items-center space-x-2">
-                    <button id="theme-toggle-mobile" class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition">
-                        <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                        <svg class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
-                    </button>
-                    <button class="text-gray-600 dark:text-gray-300">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-                    </button>
+                <div id="menu-usuario" class="hidden items-center gap-3">
+                    <span id="nombre-usuario" class="font-medium"></span>
+                    <button id="btn-salir" class="text-red-500 text-sm">Salir</button>
                 </div>
             </div>
         </div>
-    </nav>
+    </header>
 
-    <!-- ===== PANTALLA DE INICIO ===== -->
-    <section class="gradient-bg-light dark:gradient-bg-dark text-white py-16 md:py-24">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid md:grid-cols-2 gap-12 items-center">
-                <div>
-                    <h1 class="text-4xl md:text-5xl font-bold mb-6 leading-tight">Claridad y control para tu economía</h1>
-                    <p class="text-xl mb-8 text-blue-100 leading-relaxed">Mis Finanzas te acompaña hacia la estabilidad económica. Comprendé tus hábitos, optimizá tus gastos y construí ahorros sostenibles.</p>
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="#precios" class="bg-white text-primary font-semibold px-8 py-3 rounded-lg hover:bg-gray-100 transition text-center shadow-lg">Explorar planes</a>
-                        <button id="btn-register-hero" class="border-2 border-white/70 text-white font-semibold px-8 py-3 rounded-lg hover:bg-white/10 transition text-center">Crear cuenta gratis</button>
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <!-- SECCIÓN DE INICIO -->
+        <section id="inicio">
+            <div id="saludo" class="mb-8">
+                <h2 class="text-2xl font-bold" id="texto-saludo">Bienvenido</h2>
+                <p class="text-gris-600 dark:text-gris-300">Tu espacio para organizar y crecer con tus finanzas</p>
+            </div>
+
+            <!-- PANEL USUARIO -->
+            <div id="panel-usuario" class="hidden">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <div class="card bg-white dark:bg-gris-800 p-6 rounded-xl">
+                        <p class="text-sm text-gris-500">Saldo Total</p>
+                        <p class="text-2xl font-bold">$ <span id="saldo">0.00</span> USD</p>
                     </div>
-                    <p class="mt-4 text-blue-200 text-sm">Plan mensual con 7 días de prueba sin costo • Cancelación inmediata</p>
+                    <div class="card bg-white dark:bg-gris-800 p-6 rounded-xl">
+                        <p class="text-sm text-gris-500">Ingresos Este Mes</p>
+                        <p class="text-2xl font-bold text-green-600">$ <span id="ingresos">0.00</span> USD</p>
+                    </div>
+                    <div class="card bg-white dark:bg-gris-800 p-6 rounded-xl">
+                        <p class="text-sm text-gris-500">Gastos Este Mes</p>
+                        <p class="text-2xl font-bold text-red-500">$ <span id="gastos">0.00</span> USD</p>
+                    </div>
                 </div>
-                <div class="hidden md:block">
-                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 text-text-light dark:text-text-dark">
-                        <div class="flex items-center justify-between mb-6">
-                            <h3 class="font-semibold text-lg">Panel principal</h3>
-                            <span class="bg-green-100 dark:bg-green-900/40 text-secondary-dark dark:text-secondary-light text-xs px-3 py-1 rounded-full font-medium">+ $140 ahorrados</span>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="card bg-white dark:bg-gris-800 p-6 rounded-xl">
+                        <h3 class="font-semibold mb-4">Tu Crecimiento Monetario</h3>
+                        <canvas id="grafico-crecimiento"></canvas>
+                    </div>
+                    <div class="card bg-white dark:bg-gris-800 p-6 rounded-xl">
+                        <h3 class="font-semibold mb-4">Distribución de Gastos</h3>
+                        <canvas id="grafico-gastos"></canvas>
+                    </div>
+                </div>
+
+                <div class="card bg-white dark:bg-gris-800 p-6 rounded-xl mb-8">
+                    <h3 class="font-semibold mb-3">💛 Acompañamiento</h3>
+                    <p class="text-gris-600 dark:text-gris-300 mb-4" id="mensaje-motivacional">¡Cada pequeño paso que des organizando tu dinero es un gran logro! No te preocupes si te equivocas, lo importante es aprender y seguir avanzando.</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <button class="p-3 rounded-lg bg-claro-100 dark:bg-gris-700 text-left">Consejos para gastar con conciencia</button>
+                        <button class="p-3 rounded-lg bg-claro-100 dark:bg-gris-700 text-left">¿Cómo empezar a ahorrar sin sufrir?</button>
+                    </div>
+                </div>
+
+                <div class="card bg-white dark:bg-gris-800 p-6 rounded-xl">
+                    <h3 class="font-semibold mb-4">Planes y Suscripción</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="p-4 border border-claro-300 dark:border-gris-600 rounded-xl">
+                            <p class="font-medium">Básico</p>
+                            <p class="text-xl font-bold my-2">$3.99 USD/mes</p>
+                            <button class="w-full py-2 rounded bg-azul-600 text-white mt-2">Elegir</button>
                         </div>
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg"><span class="text-gray-600 dark:text-gray-300">Ingresos</span><span class="font-semibold text-secondary-dark">$1.200</span></div>
-                            <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg"><span class="text-gray-600 dark:text-gray-300">Gastos</span><span class="font-semibold text-red-600">-$780</span></div>
-                            <div class="flex justify-between items-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800/50"><span class="text-gray-700 dark:text-gray-200 font-medium">Disponible</span><span class="font-bold text-primary">$420</span></div>
+                        <div class="p-4 border border-dorado-500 rounded-xl relative">
+                            <span class="absolute -top-2 right-3 bg-dorado-500 text-black text-xs px-2 rounded">7 días gratis</span>
+                            <p class="font-medium">Premium</p>
+                            <p class="text-xl font-bold my-2">$6.99 USD/mes</p>
+                            <button class="w-full py-2 rounded bg-azul-600 text-white mt-2">Elegir</button>
+                        </div>
+                        <div class="p-4 border border-claro-300 dark:border-gris-600 rounded-xl">
+                            <p class="font-medium">Familia</p>
+                            <p class="text-xl font-bold my-2">$9.99 USD/mes</p>
+                            <button class="w-full py-2 rounded bg-azul-600 text-white mt-2">Elegir</button>
+                        </div>
+                        <div class="p-4 border border-claro-300 dark:border-gris-600 rounded-xl">
+                            <p class="font-medium">Anual</p>
+                            <p class="text-xl font-bold my-2">$99.99 USD</p>
+                            <button class="w-full py-2 rounded bg-azul-600 text-white mt-2">Elegir</button>
                         </div>
                     </div>
+                    <p class="text-sm text-gris-500 mt-4">Pagos habilitados con Mercado Pago y tarjetas de crédito/débito</p>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Beneficios -->
-    <section id="beneficios" class="py-16 md:py-24 bg-surface-warm dark:bg-surface-dark">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4">Por qué Mis Finanzas es diferente</h2>
-                <p class="text-xl text-text-muted dark:text-gray-400 max-w-2xl mx-auto">Un enfoque humano y realista. No exigimos perfección; acompañamos tu progreso.</p>
-            </div>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="p-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-surface-light dark:bg-gray-800/50 card-hover">
-                    <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mb-4"><svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div>
-                    <h3 class="text-xl font-semibold mb-3">Seguridad y privacidad</h3>
-                    <p class="text-text-muted dark:text-gray-400">Tus datos financieros con los más altos estándares de seguridad.</p>
-                </div>
-                <div class="p-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-surface-light dark:bg-gray-800/50 card-hover">
-                    <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mb-4"><svg class="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
-                    <h3 class="text-xl font-semibold mb-3">Simple y rápido</h3>
-                    <p class="text-text-muted dark:text-gray-400">Registrá tus movimientos en segundos, sin complicaciones.</p>
-                </div>
-                <div class="p-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-surface-light dark:bg-gray-800/50 card-hover">
-                    <div class="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mb-4"><svg class="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg></div>
-                    <h3 class="text-xl font-semibold mb-3">Ideal para familia</h3>
-                    <p class="text-text-muted dark:text-gray-400">Plan familiar hasta 4 usuarios. ~$2.50 por persona al mes.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Cómo funciona -->
-    <section id="como-funciona" class="py-16 md:py-24 bg-background-light dark:bg-background-dark">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4">Tres pasos simples</h2>
-                <p class="text-xl text-text-muted dark:text-gray-400">Comenzá hoy y notá cambios en tu primera semana.</p>
-            </div>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="text-center">
-                    <div class="w-16 h-16 bg-primary dark:bg-primary-light text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-6 shadow-md">1</div>
-                    <h3 class="text-xl font-semibold mb-3">Creá tu cuenta</h3>
-                    <p class="text-text-muted dark:text-gray-400">Registrate con tu correo y contraseña. Menos de 1 minuto.</p>
-                </div>
-                <div class="text-center">
-                    <div class="w-16 h-16 bg-primary dark:bg-primary-light text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-6 shadow-md">2</div>
-                    <h3 class="text-xl font-semibold mb-3">Ingresá tus datos</h3>
-                    <p class="text-text-muted dark:text-gray-400">Completá tus ingresos y gastos. Obtené tu diagnóstico personal.</p>
-                </div>
-                <div class="text-center">
-                    <div class="w-16 h-16 bg-primary dark:bg-primary-light text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-6 shadow-md">3</div>
-                    <h3 class="text-xl font-semibold mb-3">Empezá a ahorrar</h3>
-                    <p class="text-text-muted dark:text-gray-400">Recibí recomendaciones semanales y seguí tu progreso mes a mes.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Planes -->
-    <section id="precios" class="py-16 md:py-24 bg-surface-warm dark:bg-surface-dark">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4">Planes de suscripción</h2>
-                <p class="text-xl text-text-muted dark:text-gray-400 mb-2">Elegí la opción que mejor se adapte a vos</p>
-                <p class="text-sm text-text-muted dark:text-gray-500">Todos los precios en USD</p>
-            </div>
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-                <!-- Básico -->
-                <div class="border border-gray-200 dark:border-gray-700 rounded-2xl p-6 bg-surface-light dark:bg-gray-800/50 card-hover flex flex-col">
-                    <h3 class="text-xl font-bold mb-1">Básico</h3>
-                    <p class="text-text-muted dark:text-gray-400 text-sm mb-6">Para comenzar</p>
-                    <div class="mb-6"><span class="text-3xl font-bold">$3.99</span><span class="text-text-muted">/mes</span></div>
-                    <ul class="space-y-3 mb-8 flex-grow text-sm text-text-muted dark:text-gray-400">
-                        <li class="flex items-start"><svg class="w-5 h-5 text-secondary mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Diagnóstico financiero</li>
-                        <li class="flex items-start"><svg class="w-5 h-5 text-secondary mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>1 ajuste semanal</li>
-                        <li class="flex items-start"><svg class="w-5 h-5 text-secondary mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Registro de movimientos</li>
-                    </ul>
-                    <button class="w-full py-3 border-2 border-primary text-primary dark:text-primary-light font-medium rounded-lg hover:bg-primary hover:text-white transition">Elegir Básico</button>
-                </div>
-                <!-- Mensual -->
-                <div class="border-2 border-primary dark:border-primary-light rounded-2xl p-6 relative bg-gradient-to-b from-blue-50 to-surface-light dark:from-blue-900/20 dark:to-gray-800 card-hover flex flex-col shadow-lg">
-                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-primary text-white px-4 py-1 rounded-full text-xs font-semibold">MÁS ELEGIDO</div>
-                    <h3 class="text-xl font-bold mb-1">Mensual</h3>
-                    <p class="text-text-muted dark:text-gray-400 text-sm mb-6">Control integral</p>
-                    <div class="mb-6"><span class="text-3xl font-bold">$6.99</span><span class="text-text-muted">/mes</span></div>
-                    <ul class="space-y-3 mb-8 flex-grow text-sm text-text-muted dark:text-gray-400">
-                        <li class="flex items-start"><svg class="w-5 h-5 text-secondary mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Todo el plan Básico</li>
-                        <li class="flex items-start"><svg class="w-5 h-5 text-secondary mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>3 ajustes semanales</li>
-                        <li class="flex items-start"><svg class="w-5 h-5 text-secondary mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Alertas de gastos</li>
-                        <li class="flex items-start"><svg class="w-5 h-5 text-secondary mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><strong>7 días gratis</strong></li>
-                    </ul>
-                    <button class="w-full py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary-dark transition shadow-md">Probar gratis</button>
-                </div>
-                <!-- Familiar -->
-                <div class="border border-gray-200 dark:border-gray-700 rounded-2xl p-6 bg-surface-light dark:bg-gray-800/50 card-hover flex flex-col">
-                    <h3 class="text-xl font-bold mb-1">Familiar</h3>
-                    <p class="text-text-muted dark:text-gray-400 text-sm mb-6">Hasta 4 usuarios</p>
-                    <div class="mb-6"><span class="text-3xl font-bold">$9.99</span><span class="text-text-muted">/mes</span></div>
-                    <ul class="space-y-3 mb-8 flex-grow text-sm text-text-muted dark:text-gray-400">
-                        <li class="flex items-start"><svg class="w-5 h-5 text-secondary mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Todo el plan Mensual</li>
-                        <li class="flex items-start"><svg class="w-5 h-5 text-secondary mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><strong>4 cuentas independientes</strong></li>
-                        <li class="flex items-start"><svg class="w-5 h-5 text-secondary mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>~$2.50 por persona</li>
-                    </ul>
-                    <button class="w-full py-3 border-2 border-primary text-primary dark:text-primary-light font-medium rounded-lg hover:bg-primary hover:text-white transition">Elegir Familiar</button>
-                </div>
-                <!-- Anual -->
-                <div class="border border-gray-200 dark:border-gray-700 rounded-2xl p-6 bg-surface-light dark:bg-gray-800/50 card-hover flex flex-col">
-                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-secondary text-white px-4 py-1 rounded-full text-xs font-semibold">MEJOR VALOR</div>
-                    <h3 class="text-xl font-bold mb-1">Anual</h3>
-                    <p class="text-text-muted dark:text-gray-400 text-sm mb-6">Pago anual</p>
-                    <div class="mb-6"><span class="text-3xl font-bold">$99.99</span><span class="text-text-muted">/año</span></div>
-                    <p class="text-xs text-secondary-dark dark:text-secondary-light mb-4 font-medium">Ahorrás ~2 meses</p>
-                    <ul class="space-y-3 mb-8 flex-grow text-sm text-text-muted dark:text-gray-400">
-                        <li class="flex items-start"><svg class="w-5 h-5 text-secondary mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Todo el plan Mensual</li>
-                        <li class="flex items-start"><svg class="w-5 h-5 text-secondary mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Ahorro ~17%</li>
-                        <li class="flex items-start"><svg class="w-5 h-5 text-secondary mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Soporte prioritario</li>
-                    </ul>
-                    <button class="w-full py-3 bg-secondary text-white font-medium rounded-lg hover:bg-secondary-dark transition shadow-md">Elegir Anual</button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-gray-900 dark:bg-gray-950 text-white py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid md:grid-cols-4 gap-8">
-                <div>
-                    <div class="flex items-center mb-4">
-                        <svg class="w-6 h-6 text-primary-light mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                        <h4 class="text-lg font-bold">Mis Finanzas</h4>
+            <!-- PANEL ADMINISTRADOR -->
+            <div id="panel-admin" class="hidden mt-10">
+                <h2 class="text-2xl font-bold mb-6 border-b border-claro-300 dark:border-gris-700 pb-2">🔧 Panel de Administración</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="card bg-white dark:bg-gris-800 p-6 rounded-xl">
+                        <h3 class="font-semibold mb-4">Crecimiento de Usuarios</h3>
+                        <canvas id="grafico-usuarios"></canvas>
                     </div>
-                    <p class="text-gray-400 text-sm">Gestión consciente y sostenible de tus finanzas.</p>
+                    <div class="card bg-white dark:bg-gris-800 p-6 rounded-xl">
+                        <h3 class="font-semibold mb-4">Ingresos Totales</h3>
+                        <canvas id="grafico-ingresos"></canvas>
+                    </div>
                 </div>
-                <div>
-                    <h5 class="font-semibold mb-4">Producto</h5>
-                    <ul class="space-y-2 text-gray-400 text-sm">
-                        <li><a href="#beneficios" class="hover:text-white">Beneficios</a></li>
-                        <li><a href="#como-funciona" class="hover:text-white">Cómo funciona</a></li>
-                        <li><a href="#precios" class="hover:text-white">Planes</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h5 class="font-semibold mb-4">Legal</h5>
-                    <ul class="space-y-2 text-gray-400 text-sm">
-                        <li><a href="#" class="hover:text-white">Términos</a></li>
-                        <li><a href="#" class="hover:text-white">Privacidad</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h5 class="font-semibold mb-4">Contacto</h5>
-                    <p class="text-gray-400 text-sm">hola@misfinanzas.com<br>Uruguay</p>
+                <div class="card bg-white dark:bg-gris-800 p-6 rounded-xl">
+                    <h3 class="font-semibold mb-4">Gestión de Pagos</h3>
+                    <p class="text-gris-600 dark:text-gris-300 mb-4">Conexión activa con Mercado Pago y pasarela de tarjetas para confirmar cobros y gestionar suscripciones.</p>
                 </div>
             </div>
-            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
-                <p>&copy; 2026 Mis Finanzas. Todos los derechos reservados.</p>
-            </div>
-        </div>
-    </footer>
+        </section>
+    </main>
 
-    <!-- ===== MODAL DE INICIO DE SESIÓN ===== -->
-    <div id="modal-login" class="fixed inset-0 z-50 hidden items-center justify-center modal-backdrop">
-        <div class="bg-surface-warm dark:bg-gray-800 rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4 relative">
-            <button id="close-login" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-            <h2 class="text-2xl font-bold text-center mb-6 text-primary dark:text-primary-light">Bienvenido de nuevo</h2>
-            <form id="form-login" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Correo electrónico</label>
-                    <input type="email" id="login-email" required class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contraseña</label>
-                    <input type="password" id="login-password" required class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
-                </div>
-                <div class="text-right">
-                    <a href="#" class="text-sm text-primary dark:text-primary-light hover:underline">¿Olvidaste tu contraseña?</a>
-                </div>
-                <button type="submit" id="btn-login-submit" class="w-full bg-primary dark:bg-primary-light text-white py-3 rounded-lg font-semibold hover:bg-primary-dark transition">Iniciar sesión</button>
+    <!-- MODALES DE INGRESO Y REGISTRO -->
+    <div id="modal-ingresar" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-gris-800 p-6 rounded-xl w-full max-w-md mx-4">
+            <h3 class="text-xl font-bold mb-4">Ingresar a Mi Finanzas</h3>
+            <form id="form-ingresar" class="space-y-4">
+                <input type="email" id="ing-email" placeholder="Tu correo" required class="w-full p-3 rounded-lg border border-claro-300 dark:border-gris-600 bg-claro-50 dark:bg-gris-900">
+                <input type="password" id="ing-pass" placeholder="Contraseña" required class="w-full p-3 rounded-lg border border-claro-300 dark:border-gris-600 bg-claro-50 dark:bg-gris-900">
+                <button type="submit" class="w-full py-3 rounded-lg bg-azul-600 text-white">Ingresar</button>
             </form>
-            <p class="text-center mt-6 text-sm text-gray-600 dark:text-gray-400">
-                ¿No tenés cuenta? <button id="go-register" class="text-primary dark:text-primary-light font-medium hover:underline">Registrarse</button>
-            </p>
+            <button class="mt-4 text-sm text-gris-500" onclick="cerrarModales()">Cerrar</button>
         </div>
     </div>
 
-    <!-- ===== MODAL DE REGISTRO ===== -->
-    <div id="modal-register" class="fixed inset-0 z-50 hidden items-center justify-center modal-backdrop">
-        <div class="bg-surface-warm dark:bg-gray-800 rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4 relative max-h-[90vh] overflow-y-auto">
-            <button id="close-register" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-            <h2 class="text-2xl font-bold text-center mb-6 text-primary dark:text-primary-light">Crear cuenta</h2>
-            <form id="form-register" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre completo</label>
-                    <input type="text" id="register-name" required class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Correo electrónico</label>
-                    <input type="email" id="register-email" required class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contraseña</label>
-                    <input type="password" id="register-password" required minlength="6" class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Mínimo 6 caracteres</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirmar contraseña</label>
-                    <input type="password" id="register-confirm" required class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
-                </div>
-                <div class="flex items-start">
-                    <input type="checkbox" required id="terminos" class="mt-1 mr-2">
-                    <label for="terminos" class="text-sm text-gray-600 dark:text-gray-400">Acepto los <a href="#" class="text-primary hover:underline">Términos de servicio</a> y la <a href="#" class="text-primary hover:underline">Política de privacidad</a></label>
-                </div>
-                <button type="submit" id="btn-register-submit" class="w-full bg-primary dark:bg-primary-light text-white py-3 rounded-lg font-semibold hover:bg-primary-dark transition">Crear cuenta</button>
+    <div id="modal-registrar" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-gris-800 p-6 rounded-xl w-full max-w-md mx-4">
+            <h3 class="text-xl font-bold mb-4">Crear tu cuenta</h3>
+            <form id="form-registrar" class="space-y-4">
+                <input type="text" id="reg-nombre" placeholder="Nombre o alias como quieras que te llamemos" required class="w-full p-3 rounded-lg border border-claro-300 dark:border-gris-600 bg-claro-50 dark:bg-gris-900">
+                <input type="email" id="reg-email" placeholder="Tu correo electrónico" required class="w-full p-3 rounded-lg border border-claro-300 dark:border-gris-600 bg-claro-50 dark:bg-gris-900">
+                <input type="password" id="reg-pass" placeholder="Contraseña (mínimo 6 caracteres)" required minlength="6" class="w-full p-3 rounded-lg border border-claro-300 dark:border-gris-600 bg-claro-50 dark:bg-gris-900">
+                <p class="text-sm text-gris-500">Te enviaremos un correo para confirmar que eres tú</p>
+                <button type="submit" class="w-full py-3 rounded-lg bg-azul-600 text-white">Crear cuenta</button>
             </form>
-            <p class="text-center mt-6 text-sm text-gray-600 dark:text-gray-400">
-                ¿Ya tenés cuenta? <button id="go-login" class="text-primary dark:text-primary-light font-medium hover:underline">Iniciar sesión</button>
-            </p>
+            <button class="mt-4 text-sm text-gris-500" onclick="cerrarModales()">Cerrar</button>
         </div>
     </div>
 
     <script>
-        // ==============================================
-        // 🔑 CONEXIÓN CON SUPABASE - TUS DATOS YA ESTÁN
-        // ==============================================
+        // DATOS DE TU SUPABASE
         const SUPABASE_URL = "https://rvfwcbdroqjccxjwznkm.supabase.co";
         const SUPABASE_KEY = "sb_publishable_09BiXr7PFlLfDP3YfEZg-w_b_5UH0td";
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Tema claro/oscuro
-        const themeToggle = document.getElementById('theme-toggle');
-        const themeToggleMobile = document.getElementById('theme-toggle-mobile');
-        const html = document.documentElement;
-
-        if (localStorage.getItem('theme') === 'dark' || 
-            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            html.classList.add('dark');
+        // GESTIÓN DE TEMA
+        if(localStorage.getItem('tema') === 'oscuro' || (!localStorage.getItem('tema') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
         }
-
-        function toggleTheme() {
-            html.classList.toggle('dark');
-            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
-        }
-
-        themeToggle.addEventListener('click', toggleTheme);
-        themeToggleMobile.addEventListener('click', toggleTheme);
-
-        // MODALES: Login y Registro
-        const modalLogin = document.getElementById('modal-login');
-        const modalRegister = document.getElementById('modal-register');
-        const authButtons = document.getElementById('auth-buttons');
-        const userMenu = document.getElementById('user-menu');
-        const userName = document.getElementById('user-name');
-        const btnLogin = document.getElementById('btn-login');
-        const btnRegister = document.getElementById('btn-register');
-        const btnRegisterHero = document.getElementById('btn-register-hero');
-        const closeLogin = document.getElementById('close-login');
-        const closeRegister = document.getElementById('close-register');
-        const goRegister = document.getElementById('go-register');
-        const goLogin = document.getElementById('go-login');
-        const btnLogout = document.getElementById('btn-logout');
-
-        function openModal(modal) {
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeModal(modal) {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            document.body.style.overflow = '';
-        }
-
-        btnLogin.addEventListener('click', () => openModal(modalLogin));
-        btnRegister.addEventListener('click', () => openModal(modalRegister));
-        btnRegisterHero.addEventListener('click', () => openModal(modalRegister));
-        closeLogin.addEventListener('click', () => closeModal(modalLogin));
-        closeRegister.addEventListener('click', () => closeModal(modalRegister));
-
-        goRegister.addEventListener('click', (e) => {
-            e.preventDefault();
-            closeModal(modalLogin);
-            openModal(modalRegister);
+        document.getElementById('cambiar-tema').addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('tema', document.documentElement.classList.contains('dark') ? 'oscuro' : 'claro');
+            actualizarGraficos();
         });
 
-        goLogin.addEventListener('click', (e) => {
-            e.preventDefault();
-            closeModal(modalRegister);
-            openModal(modalLogin);
-        });
+        // SALUDO SEGÚN HORARIO
+        function obtenerSaludo() {
+            const hora = new Date().getHours();
+            if(hora >= 5 && hora < 12) return "Buenos días";
+            if(hora >= 12 && hora < 19) return "Buenas tardes";
+            return "Buenas noches";
+        }
 
-        // Cerrar al hacer clic fuera
-        window.addEventListener('click', (e) => {
-            if (e.target === modalLogin) closeModal(modalLogin);
-            if (e.target === modalRegister) closeModal(modalRegister);
-        });
+        // MODALES
+        function cerrarModales() {
+            document.getElementById('modal-ingresar').classList.add('hidden');
+            document.getElementById('modal-registrar').classList.add('hidden');
+        }
+        document.getElementById('btn-ingresar').addEventListener('click', () => document.getElementById('modal-ingresar').classList.remove('hidden'));
+        document.getElementById('btn-registrar').addEventListener('click', () => document.getElementById('modal-registrar').classList.remove('hidden'));
 
-        // ==============================================
-        // 🔐 AUTENTICACIÓN CON SUPABASE
-        // ==============================================
-
-        // Actualizar interfaz según sesión
-        function updateAuthUI(user) {
-            if (user) {
-                authButtons.classList.add('hidden');
-                userMenu.classList.remove('hidden');
-                userMenu.classList.add('flex');
-                userName.textContent = user.user_metadata?.name || user.email;
-            } else {
-                authButtons.classList.remove('hidden');
-                authButtons.classList.add('flex');
-                userMenu.classList.add('hidden');
-                userMenu.classList.remove('flex');
+        // AUTENTICACIÓN
+        async function actualizarEstadoSesion() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if(session) {
+                const nombre = session.user.user_metadata?.nombre || session.user.email.split('@')[0];
+                document.getElementById('nombre-usuario').textContent = nombre;
+                document.getElementById('botones-auth').classList.add('hidden');
+                document.getElementById('menu-usuario').classList.remove('hidden');
+                document.getElementById('menu-usuario').classList.add('flex');
+                document.getElementById('texto-saludo').textContent = `${obtenerSaludo()}, ${nombre}`;
+                document.getElementById('panel-usuario').classList.remove('hidden');
+                // Si es administrador se activa su panel aquí
+                if(session.user.email === 'tu.correo.administrador@ejemplo.com') {
+                    document.getElementById('panel-admin').classList.remove('hidden');
+                }
+                iniciarGraficos();
             }
         }
-
-        // Verificar sesión al cargar
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            updateAuthUI(session?.user);
-        });
-
-        // Escuchar cambios de sesión
-        supabase.auth.onAuthStateChange((_event, session) => {
-            updateAuthUI(session?.user);
-        });
 
         // REGISTRO
-        document.getElementById('form-register').addEventListener('submit', async (e) => {
+        document.getElementById('form-registrar').addEventListener('submit', async e => {
             e.preventDefault();
-            const name = document.getElementById('register-name').value.trim();
-            const email = document.getElementById('register-email').value.trim();
-            const password = document.getElementById('register-password').value;
-            const confirm = document.getElementById('register-confirm').value;
+            const nombre = document.getElementById('reg-nombre').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const pass = document.getElementById('reg-pass').value;
 
-            if (password !== confirm) {
-                alert('Las contraseñas no coinciden');
-                return;
-            }
-
-            const { data, error } = await supabase.auth.signUp({
-                email,
-                password,
-                options: {
-                    data: { name }
-                }
+            const { error } = await supabase.auth.signUp({
+                email, password: pass,
+                options: { data: { nombre }, emailRedirectTo: window.location.origin }
             });
 
-            if (error) {
-                alert('Error: ' + error.message);
-            } else {
-                alert('¡Mis Finanzas agradece tu registro! 🎉\n\nRevisá tu correo para confirmar tu cuenta.');
-                closeModal(modalRegister);
-            }
+            if(error) alert('Error: ' + error.message);
+            else alert('¡Cuenta creada! Te enviamos un correo para confirmar tu identidad ✅');
+            cerrarModales();
         });
 
-        // INICIO DE SESIÓN
-        document.getElementById('form-login').addEventListener('submit', async (e) => {
+        // INGRESO
+        document.getElementById('form-ingresar').addEventListener('submit', async e => {
             e.preventDefault();
-            const email = document.getElementById('login-email').value.trim();
-            const password = document.getElementById('login-password').value;
+            const email = document.getElementById('ing-email').value.trim();
+            const pass = document.getElementById('ing-pass').value;
 
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email,
-                password
-            });
-
-            if (error) {
-                alert('Error: ' + error.message);
-            } else {
-                alert('¡Bienvenido/a de nuevo a Mis Finanzas! 🎉');
-                closeModal(modalLogin);
-            }
+            const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
+            if(error) alert('Error: ' + error.message);
+            cerrarModales();
         });
 
-        // CERRAR SESIÓN
-        btnLogout.addEventListener('click', async () => {
+        // SALIR
+        document.getElementById('btn-salir').addEventListener('click', async () => {
             await supabase.auth.signOut();
-            alert('Sesión cerrada correctamente. ¡Volvé pronto! 👋');
+            location.reload();
         });
 
-        // Navegación suave
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
+        // GRÁFICAS
+        let grafico1, grafico2, grafico3, grafico4;
+        function iniciarGraficos() {
+            const colorTexto = document.documentElement.classList.contains('dark') ? '#a1a1aa' : '#52525b';
+
+            grafico1 = new Chart(document.getElementById('grafico-crecimiento'), {
+                type: 'line',
+                data: { labels: ['Ene','Feb','Mar','Abr','May','Jun'], datasets: [{ label: 'Ahorro acumulado USD', data: [100,250,320,480,610,750], borderColor: '#ca8a04', backgroundColor: 'rgba(202,138,4,0.1)', fill: true }] },
+                options: { responsive: true, plugins: { legend: { labels: { color: colorTexto } } }, scales: { x: { ticks: {color:colorTexto} }, y: { ticks: {color:colorTexto} } } }
             });
-        });
+
+            grafico2 = new Chart(document.getElementById('grafico-gastos'), {
+                type: 'doughnut',
+                data: { labels: ['Vivienda','Comida','Transporte','Otros'], datasets: [{ data: [45,30,15,10], backgroundColor: ['#3b82f6','#ca8a04','#10b981','#71717a'] }] },
+                options: { responsive: true, plugins: { legend: { labels: { color: colorTexto } } } }
+            });
+
+            grafico3 = new Chart(document.getElementById('grafico-usuarios'), {
+                type: 'bar',
+                data: { labels: ['Ene','Feb','Mar','Abr','May','Jun'], datasets: [{ label: 'Usuarios totales', data: [12,35,68,110,180,245], backgroundColor: '#3b82f6' }] },
+                options: { responsive: true, plugins: { legend: { labels: { color: colorTexto } } }, scales: { x: { ticks: {color:colorTexto} }, y: { ticks: {color:colorTexto} } } }
+            });
+
+            grafico4 = new Chart(document.getElementById('grafico-ingresos'), {
+                type: 'line',
+                data: { labels: ['Ene','Feb','Mar','Abr','May','Jun'], datasets: [{ label: 'Ingresos totales USD', data: [150,420,780,1300,2100,3200], borderColor: '#ca8a04', tension: 0.3 }] },
+                options: { responsive: true, plugins: { legend: { labels: { color: colorTexto } } }, scales: { x: { ticks: {color:colorTexto} }, y: { ticks: {color:colorTexto} } } }
+            });
+        }
+
+        function actualizarGraficos() {
+            if(!grafico1) return;
+            const colorTexto = document.documentElement.classList.contains('dark') ? '#a1a1aa' : '#52525b';
+            [grafico1, grafico2, grafico3, grafico4].forEach(g => {
+                g.options.plugins.legend.labels.color = colorTexto;
+                if(g.options.scales) {
+                    g.options.scales.x.ticks.color = colorTexto;
+                    g.options.scales.y.ticks.color = colorTexto;
+                }
+                g.update();
+            });
+        }
+
+        // INICIO GENERAL
+        supabase.auth.onAuthStateChange(actualizarEstadoSesion);
+        actualizarEstadoSesion();
     </script>
 </body>
 </html>
